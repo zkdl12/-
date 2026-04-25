@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANI WORLD - Game Select</title>
+    <link rel="stylesheet" href="team-style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="top-visual">
+            <img src="https://stimg.sooplive.co.kr/NORMAL_BBS/6/7137696/305369adc059599f2.gif" class="ani-gif-main">
+        </div>
+
+        <header>
+            <h1>게임 전용 페이지 선택</h1>
+            <p class="sub-title">관리하실 게임의 버튼을 눌러주세요</p>
+        </header>
+
+        <div id="mode-selection" class="game-grid-wrapper">
+            <div class="game-select-card lol-card" onclick="location.href='lol.html'">
+                <div class="game-icon-box">
+                    <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/c1d412f408112f04dc09d41b8c9186ff1739aa89-1920x1080.jpg?accountingTag=LoL" alt="LoL">
+                </div>
+                <div class="game-info">
+                    <h3>League of Legends</h3>
+                    <p>롤 CK 팀 섞기 및 밴픽 도구</p>
+                </div>
+            </div>
+
+            <div class="game-select-card pubg-card" onclick="location.href='pubg.html'">
+                <div class="game-icon-box">
+                    <img src="https://wimg.kyeongin.com/news/legacy/file/201803/20180308010002840_1.jpg" alt="PUBG">
+                </div>
+                <div class="game-info">
+                    <h3>PUBG</h3>
+                    <p>배그 스쿼드 배정 및 랜덤 룰</p>
+                </div>
+            </div>
+
+            <div class="game-select-card ow-card" onclick="location.href='ow.html'">
+                <div class="game-icon-box" style="display: flex; justify-content: center; align-items: center; padding: 20px; background: #e9e9e9;">
+                    <img src="owr.jpg" alt="Overwatch" style="object-fit: contain; width: 200%; height: 500%;">
+                </div>
+                <div class="game-info">
+                    <h3>Overwatch</h3>
+                    <p>오버워치 팀 매칭 및 포지션 배정</p>
+                </div>
+            </div>
+
+            <div class="game-select-card val-card" onclick="location.href='val.html'">
+                <div class="game-icon-box">
+                    <img src="https://image.winudf.com/v2/image1/Y29tLnZhbG9yYW50Lm1vYmlsZS5hcHBfaWNvbl8xNjgxMzMwMzE1XzA1Mw/icon.png?w=184&fakeurl=1" alt="VALORANT">
+                </div>
+                <div class="game-info">
+                    <h3>VALORANT</h3>
+                    <p>발로란트 팀 섞기 및 전적 분석</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="home-btn" onclick="location.href='index.html'">← 메인페이지로 돌아가기</button>
+    </div>
+</body>
+</html>

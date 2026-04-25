@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANI WORLD - VALORANT Builder</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+        :root {
+            --val-red: #ff4655;
+            --val-black: #0f1923;
+            --val-offwhite: #ece8e1;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--val-black);
+            background-image: radial-gradient(circle at center, #1a2a33 0%, var(--val-black) 100%);
+            font-family: 'Pretendard', sans-serif;
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; padding: 20px; color: var(--val-offwhite);
+        }
+
+        .container {
+            width: 100%; max-width: 1100px;
+            margin: auto;
+        }
+
+        header { text-align: center; margin-bottom: 20px; }
+
+        .game-logo-main { 
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            object-fit: cover; 
+            border: 3px solid var(--val-red);
+            box-shadow: 0 0 20px rgba(255, 70, 85, 0.4);
+            margin: 0 auto 10px auto;
+            display: block;
+        }
+
+        .main-content-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        /* 공통 섹션 스타일 */
+        .section-team, .section-map {
+            background: rgba(15, 25, 35, 0.95);
+            border-radius: 15px; padding: 25px;
+            border-left: 5px solid var(--val-red);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            min-height: 580px;
+            display: flex; flex-direction: column;
+        }
+
+        .section-team { flex: 1.5; }
+        .section-map { flex: 1; }
+
+        .section-title { font-size: 1.1rem; font-weight: 900; color: var(--val-red); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
+        .section-title::before { content: ""; width: 8px; height: 8px; background: var(--val-red); }
+
+        .team-labels { display: flex; justify-content: space-between; padding: 0 60px; margin-bottom: 12px; font-weight: 900; font-size: 0.9rem; color: #888; }
+        .lane-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 12px; background: rgba(255,255,255,0.04); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); }
+        .lane-tag { width: 80px; font-size: 0.8rem; font-weight: 800; color: #fff; text-align: center; background: #333; padding: 8px 0; border-radius: 8px; }
+        .player-input { flex: 1; height: 45px; background: transparent; border: none; border-bottom: 2px solid #555; padding: 0 10px; font-weight: 700; font-size: 16px; color: #fff; outline: none; text-align: center; }
+        .player-input:focus { border-bottom-color: var(--val-red); background: rgba(255,70,85,0.05); }
+
+        .lock-btn-val { 
+            background-color: #222; background-image: url('val_logo.png'); background-size: cover; background-position: center; background-repeat: no-repeat;
+            border: 1px solid #444; width: 45px; height: 50px; cursor: pointer; flex-shrink: 0; filter: grayscale(100%); opacity: 0.4; transition: 0.3s; border-radius: 10px;
+        }
+        .lock-btn-val.active { filter: grayscale(0%); opacity: 1; border-color: var(--val-red); background-color: #000; box-shadow: 0 0 10px var(--val-red); }
+        .lane-row.locked-row { background: rgba(255,70,85,0.15); border-color: var(--val-red); }
+
+        /* 맵 섹션 세부 스타일 */
+        .map-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
+        .map-item { background: #222; padding: 12px 2px; font-size: 0.75rem; font-weight: 800; text-align: center; cursor: pointer; border: 1px solid #333; color: #888; border-radius: 8px; transition: 0.2s; }
+        .map-item.active { background: rgba(255, 70, 85, 0.1); color: #fff; border-color: var(--val-red); }
+        .map-item.banned { background: #111; color: #444; border-color: #222; text-decoration: line-through; }
+
+        .map-result-box { background: #000; border: 1px solid var(--val-red); padding: 20px; text-align: center; margin-top: auto; margin-bottom: 20px; border-radius: 15px; box-shadow: inset 0 0 15px rgba(255,70,85,0.2); }
+        .map-result-box p { font-size: 0.7rem; color: #777; margin-bottom: 5px; }
+        .map-result-box h2 { font-size: 1.6rem; color: var(--val-red); letter-spacing: 1px; }
+
+        .btn-container { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+        .main-action-btn { background: var(--val-red); color: white; border: none; padding: 18px; font-weight: 900; cursor: pointer; font-size: 1.1rem; text-transform: uppercase; border-radius: 12px; transition: 0.2s; }
+        .main-action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 70, 85, 0.3); }
+        .sub-btn-group { display: flex; gap: 8px; }
+        .sub-action-btn { flex: 1; background: #333; border: 1px solid #444; padding: 12px; font-weight: 800; cursor: pointer; font-size: 0.85rem; color: #aaa; border-radius: 10px; }
+        .copy-btn { border-color: var(--val-red); color: var(--val-red); }
+
+        .home-btn { background: transparent; color: #666; border: none; cursor: pointer; font-weight: 700; margin: 25px auto; display: block; text-decoration: underline; width: 100%; text-align: center;}
+
+        @media (max-width: 850px) {
+            .main-content-wrapper { flex-direction: column; }
+            .section-team, .section-map { min-height: auto; width: 100%; }
+            .map-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://stimg.sooplive.com/NORMAL_BBS/6/7137696/433069c82d41aa11a.gif" class="game-logo-main">
+            <h1 style="font-weight: 900; letter-spacing: 2px;">VALORANT <span style="color:var(--val-red)">팀 짜기</span></h1>
+        </header>
+
+        <div class="main-content-wrapper">
+            <section class="section-team">
+                <div class="section-title">포지션별 팀 섞기</div>
+                <div class="team-labels"><span>TEAM A</span><span>TEAM B</span></div>
+                <div id="lane-rows-val"></div>
+                
+                <div class="btn-container">
+                    <button class="main-action-btn" id="t-shuffle-btn" onclick="shuffleTeams()">🪄 팀 섞기</button>
+                    <div class="sub-btn-group">
+                        <button class="sub-action-btn" onclick="resetTeams()">🔄 초기화</button>
+                        <button class="sub-action-btn copy-btn" onclick="copyTeams()">📋 결과 복사</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-map">
+                <div class="section-title">맵 선택 (클릭하여 제외)</div>
+                <div id="map-grid" class="map-grid"></div>
+                
+                <div class="map-result-box">
+                    <p id="m-shuffle-count">READY TO SCAN</p>
+                    <h2 id="selected-map-name">READY</h2>
+                </div>
+
+                <div class="btn-container">
+                    <button class="main-action-btn" id="m-shuffle-btn" onclick="shuffleMap()">🗺️ 맵 선택</button>
+                    <div class="sub-btn-group">
+                        <button class="sub-action-btn" onclick="resetMaps()">🔄 초기화</button>
+                        <button class="sub-action-btn copy-btn" onclick="copyMap()">📋 결과 복사</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <button class="home-btn" onclick="location.href='team.html'">← 게임 선택으로 돌아가기</button>
+    </div>
+
+    <script>
+        let teamCount = 0, mapCount = 0;
+        const positions = ['타격대', '척후대', '전략가', '감시자', '플렉스'];
+        const maps = ['어센트', '아이스박스', '바인드', '헤이븐', '스플릿', '브리즈', '프랙쳐', '펄', '로터스', '선셋', '어비스','코로도'];
+        let bannedMaps = [], lastMap = "";
+
+        window.onload = function() {
+            const tContainer = document.getElementById('lane-rows-val');
+            tContainer.innerHTML = positions.map(pos => `
+                <div class="lane-row">
+                    <div class="lane-tag">${pos}</div>
+                    <input type="text" class="player-input" placeholder="A팀">
+                    <button class="lock-btn-val" onclick="toggleLock(this)"></button>
+                    <input type="text" class="player-input" placeholder="B팀">
+                </div>
+            `).join('');
+
+            const mGrid = document.getElementById('map-grid');
+            mGrid.innerHTML = maps.map(m => `<div class="map-item active" onclick="toggleMap('${m}', this)">${m}</div>`).join('');
+        };
+
+        function toggleLock(btn) {
+            btn.classList.toggle('active');
+            btn.parentElement.classList.toggle('locked-row');
+        }
+
+        function toggleMap(m, el) {
+            if (el.classList.contains('active')) {
+                el.classList.replace('active', 'banned');
+                bannedMaps.push(m);
+            } else {
+                el.classList.replace('banned', 'active');
+                bannedMaps = bannedMaps.filter(x => x !== m);
+            }
+        }
+
+        function shuffleTeams() {
+            document.querySelectorAll('.lane-row').forEach(row => {
+                if (!row.querySelector('.lock-btn-val').classList.contains('active')) {
+                    const inputs = row.querySelectorAll('.player-input');
+                    if (Math.random() > 0.5) {
+                        const tmp = inputs[0].value;
+                        inputs[0].value = inputs[1].value;
+                        inputs[1].value = tmp;
+                    }
+                }
+            });
+            teamCount++;
+            document.getElementById('t-shuffle-btn').innerText = `🪄 팀 섞기 (${teamCount}회)`;
+        }
+
+        function resetTeams() {
+            document.querySelectorAll('.player-input').forEach(i => i.value = '');
+            document.querySelectorAll('.lock-btn-val').forEach(b => {
+                b.classList.remove('active');
+                b.parentElement.classList.remove('locked-row');
+            });
+            teamCount = 0;
+            document.getElementById('t-shuffle-btn').innerText = `🪄 팀 섞기`;
+        }
+
+        function copyTeams() {
+            let t = `[TEAM A] vs [TEAM B]\n`;
+            document.querySelectorAll('.lane-row').forEach(row => {
+                const pos = row.querySelector('.lane-tag').innerText;
+                const i = row.querySelectorAll('.player-input');
+                t += `[${pos}] ${i[0].value || '미정'} vs ${i[1].value || '미정'}\n`;
+            });
+            navigator.clipboard.writeText(t).then(() => alert("팀 결과 복사 완료!"));
+        }
+
+        function shuffleMap() {
+            const avail = maps.filter(m => !bannedMaps.includes(m));
+            if (!avail.length) return alert("제외되지 않은 맵이 없습니다!");
+            lastMap = avail[Math.floor(Math.random() * avail.length)];
+            document.getElementById('selected-map-name').innerText = lastMap;
+            mapCount++;
+            document.getElementById('m-shuffle-count').innerText = `SCANNING COMPLETE (${mapCount}회)`;
+        }
+
+        function resetMaps() {
+            document.querySelectorAll('.map-item').forEach(m => { m.classList.replace('banned', 'active'); });
+            bannedMaps = []; mapCount = 0; lastMap = "";
+            document.getElementById('selected-map-name').innerText = "READY";
+            document.getElementById('m-shuffle-count').innerText = "READY TO SCAN";
+        }
+
+        function copyMap() {
+            if (!lastMap) return alert("먼저 맵을 선택해 주세요!");
+            navigator.clipboard.writeText(`📍 선택된 맵: ${lastMap}`).then(() => alert("맵 결과 복사 완료!"));
+        }
+    </script>
+</body>
+</html>

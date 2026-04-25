@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANI WORLD - OVERWATCH Builder</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+        :root {
+            --ow-orange: #f99e1a;
+            --ow-blue: #405275;
+            --ow-white: #ffffff;
+            --ow-dark: #121417;
+            --ow-card-bg: rgba(33, 37, 41, 0.98);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+
+        body {
+            background: var(--ow-dark);
+            font-family: 'Pretendard', sans-serif;
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; padding: 20px; color: var(--ow-white);
+        }
+
+        .container { width: 100%; max-width: 1150px; margin: auto; }
+
+        header { text-align: center; margin-bottom: 20px; }
+        .game-logo-main { 
+            width: 110px; height: 110px; border-radius: 50%; object-fit: cover; 
+            border: 3px solid var(--ow-orange); box-shadow: 0 0 20px rgba(249, 158, 26, 0.4);
+            margin: 0 auto 10px auto; display: block;
+        }
+
+        .mode-selector { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .mode-btn { background: #333; border: 2px solid #555; padding: 8px 20px; border-radius: 50px; cursor: pointer; color: #fff; font-weight: 800; }
+        .mode-btn.active { border-color: var(--ow-orange); background: var(--ow-orange); color: #000; }
+
+        .main-content-wrapper { display: flex; gap: 20px; align-items: flex-start; }
+
+        .section-card {
+            background: var(--ow-card-bg); border-radius: 20px; padding: 22px;
+            border-top: 5px solid var(--ow-orange); box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            min-height: 650px; display: flex; flex-direction: column;
+        }
+        .section-team { flex: 1.2; }
+        .section-map { flex: 1.5; }
+
+        .section-title { font-size: 1.1rem; font-weight: 900; color: var(--ow-orange); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* 팀 리스트 스타일 */
+        .lane-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 10px; background: rgba(255,255,255,0.04); border-radius: 12px; transition: 0.3s ease; border: 1px solid transparent; }
+        .lane-tag { width: 75px; font-size: 0.75rem; font-weight: 800; color: #000; text-align: center; background: #fff; padding: 7px 0; border-radius: 6px; }
+        .player-input { flex: 1; height: 40px; background: transparent; border: none; border-bottom: 2px solid #555; color: #fff; text-align: center; outline: none; }
+        
+        .lock-btn-ow { background: #222 url('ow_logo.png') no-repeat center / 60%; border: 1px solid #444; width: 42px; height: 48px; cursor: pointer; opacity: 0.4; border-radius: 10px; filter: grayscale(100%); transition: 0.3s; background-size: cover;}
+        
+        .lock-btn-ow.active { opacity: 1; filter: grayscale(0%); border-color: var(--ow-orange); box-shadow: 0 0 10px var(--ow-orange); }
+        .lane-row.locked-row { background: rgba(249, 158, 26, 0.15); border-color: var(--ow-orange); }
+        .lane-row.locked-row .player-input { color: #888; border-bottom-color: rgba(249, 158, 26, 0.3); }
+
+        /* 모드 선택 (필터) */
+        .mode-filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+        .mode-chip { 
+            padding: 12px 5px; font-size: 0.8rem; font-weight: 900; text-align: center; border-radius: 10px;
+            background: linear-gradient(145deg, #333, #222); border: 2px solid #444; color: var(--ow-orange); cursor: pointer; transition: 0.2s;
+        }
+        .mode-chip.active { border-color: var(--ow-orange); background: rgba(249, 158, 26, 0.1); }
+        .mode-chip.disabled { opacity: 0.3; filter: grayscale(100%); text-decoration: line-through; }
+
+        /* 맵 선택 영역 (노란색/주황색 테마 적용) */
+        .map-scroll-area { flex: 1; overflow-y: auto; padding-right: 10px; margin-bottom: 15px; }
+        .map-group { margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; border-left: 3px solid var(--ow-orange); }
+        .map-group-title { font-size: 0.8rem; font-weight: 800; color: var(--ow-orange); margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .map-items-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        
+        .map-item { 
+            background: #2a2e33; padding: 8px 2px; font-size: 0.7rem; font-weight: 700; text-align: center; 
+            border: 1px solid #444; color: #ccc; border-radius: 5px; cursor: pointer; transition: 0.1s;
+        }
+        .map-item.banned { opacity: 0.2; text-decoration: line-through; }
+
+        .map-result-box { background: #000; border: 1px solid var(--ow-orange); padding: 18px; text-align: center; border-radius: 15px; margin-bottom: 15px; }
+        .map-result-box h2 { font-size: 1.5rem; color: var(--ow-orange); text-shadow: 0 0 10px rgba(249, 158, 26, 0.5); }
+
+        .btn-container { display: flex; flex-direction: column; gap: 8px; }
+        .main-action-btn { background: var(--ow-orange); color: #000; border: none; padding: 16px; font-weight: 900; cursor: pointer; border-radius: 12px; text-transform: uppercase; }
+        .sub-btn-group { display: flex; gap: 6px; }
+        .sub-action-btn { flex: 1; background: #333; border: 1px solid #444; padding: 11px; font-weight: 800; cursor: pointer; font-size: 0.8rem; color: #aaa; border-radius: 10px; }
+        .copy-btn { border-color: var(--ow-orange); color: var(--ow-orange); }
+
+        .home-btn { background: transparent; color: #666; border: none; cursor: pointer; margin: 20px auto; display: block; text-decoration: underline; width: 100%; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://stimg.sooplive.com/NORMAL_BBS/6/7137696/215569d1a8b3443e3.gif" class="game-logo-main">
+            <h1 style="font-weight: 900; letter-spacing: 1px;">OVERWATCH <span style="color:var(--ow-orange)">팀 짜기</span></h1>
+        </header>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btn5" onclick="setMode(5)">5 : 5</button>
+            <button class="mode-btn" id="btn6" onclick="setMode(6)">6 : 6</button>
+        </div>
+
+        <div class="main-content-wrapper">
+            <section class="section-card section-team">
+                <div class="section-title">포지션별 팀 섞기</div>
+                <div id="lane-rows-ow"></div>
+                <div class="btn-container">
+                    <button class="main-action-btn" id="t-shuffle-btn" onclick="shuffleTeams()">🪄 팀 섞기</button>
+                    <div class="sub-btn-group">
+                        <button class="sub-action-btn" onclick="resetTeams()">🔄 초기화</button>
+                        <button class="sub-action-btn copy-btn" onclick="copyTeams()">📋 결과 복사</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-card section-map">
+                <div class="section-title">맵 선택 (클릭하여 제외)</div>
+                <div class="mode-filter-grid" id="mode-filter-grid"></div>
+                
+                <div class="map-scroll-area" id="map-scroll-area"></div>
+                
+                <div class="map-result-box">
+                    <p id="m-count" style="font-size: 0.65rem; color: #555; margin-bottom: 5px;">SELECTED 전장</p>
+                    <h2 id="selected-map-name">READY</h2>
+                </div>
+
+                <div class="btn-container">
+                    <button class="main-action-btn" onclick="shuffleMap()">🗺️ 맵 무작위 선택</button>
+                    <div class="sub-btn-group">
+                        <button class="sub-action-btn" onclick="resetMaps()">🔄 초기화</button>
+                        <button class="sub-action-btn copy-btn" onclick="copyMap()">📋 결과 복사</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <button class="home-btn" onclick="location.href='team.html'">← 돌아가기</button>
+    </div>
+
+    <script>
+        let curMode = 5, tCount = 0, mCount = 0;
+        const mapData = {
+            "쟁탈": ["네팔", "리장타워", "부산", "사모아", "오아시스", "일리오스","남극반도"],
+            "호위": ["66번국도", "지브롤터", "도라도", "리알토", "삼발리 수도원", "서킷 로얄", "쓰레기촌", "하바나"],
+            "혼합": ["눔바니", "미드타운", "블리자드 월드", "아이헨발데", "왕의 길", "파라이수", "할리우드"],
+            "밀기": ["뉴 퀸 스트리트", "이스페란사", "콜로세오", "루나사피"],
+            "플래시포인트": ["뉴 정크 시티", "수라바사", "아틀리스"],
+            "점령": ["볼스카야", "아누비스 신전", "파리", "하나무라", "호라이즌 달 기지"]
+        };
+
+        let disabledModes = [], bannedMaps = [], lastMap = "";
+
+        window.onload = function() {
+            setMode(5);
+            renderFilters();
+            renderMaps();
+        };
+
+        function setMode(m) {
+            curMode = m;
+            document.getElementById('btn5').classList.toggle('active', m === 5);
+            document.getElementById('btn6').classList.toggle('active', m === 6);
+            const container = document.getElementById('lane-rows-ow');
+            const pos = m === 5 ? ['탱커', '딜러1', '딜러2', '힐러1', '힐러2'] : ['탱커1', '탱커2', '딜러1', '딜러2', '힐러1', '힐러2'];
+            container.innerHTML = pos.map(p => `
+                <div class="lane-row">
+                    <div class="lane-tag">${p}</div>
+                    <input type="text" class="player-input" placeholder="A팀">
+                    <button class="lock-btn-ow" onclick="toggleLock(this)"></button>
+                    <input type="text" class="player-input" placeholder="B팀">
+                </div>
+            `).join('');
+        }
+
+        function toggleLock(btn) {
+            btn.classList.toggle('active');
+            const row = btn.parentElement;
+            row.classList.toggle('locked-row');
+        }
+
+        function renderFilters() {
+            const grid = document.getElementById('mode-filter-grid');
+            grid.innerHTML = Object.keys(mapData).map(m => `
+                <div class="mode-chip ${disabledModes.includes(m) ? 'disabled' : 'active'}" onclick="toggleMode('${m}')">${m}</div>
+            `).join('');
+        }
+
+        function toggleMode(m) {
+            if (disabledModes.includes(m)) disabledModes = disabledModes.filter(x => x !== m);
+            else disabledModes.push(m);
+            renderFilters();
+            renderMaps();
+        }
+
+        function renderMaps() {
+            const area = document.getElementById('map-scroll-area');
+            let html = "";
+            Object.entries(mapData).forEach(([mode, maps]) => {
+                if (!disabledModes.includes(mode)) {
+                    html += `<div class="map-group">
+                        <div class="map-group-title"><span>${mode}</span><span>${maps.length}개</span></div>
+                        <div class="map-items-wrapper">
+                            ${maps.map(map => `<div class="map-item ${bannedMaps.includes(map) ? 'banned' : ''}" onclick="toggleMap('${map}')">${map}</div>`).join('')}
+                        </div>
+                    </div>`;
+                }
+            });
+            area.innerHTML = html;
+        }
+
+        function toggleMap(m) {
+            if (bannedMaps.includes(m)) bannedMaps = bannedMaps.filter(x => x !== m);
+            else bannedMaps.push(m);
+            renderMaps();
+        }
+
+        function shuffleTeams() {
+            document.querySelectorAll('.lane-row').forEach(row => {
+                if (!row.querySelector('.lock-btn-ow').classList.contains('active')) {
+                    const i = row.querySelectorAll('.player-input');
+                    if (Math.random() > 0.5) { let tmp = i[0].value; i[0].value = i[1].value; i[1].value = tmp; }
+                }
+            });
+            tCount++;
+            document.getElementById('t-shuffle-btn').innerText = `🪄 팀 섞기 (${tCount}회)`;
+        }
+
+        function shuffleMap() {
+            let pool = [];
+            Object.entries(mapData).forEach(([mode, maps]) => {
+                if (!disabledModes.includes(mode)) pool.push(...maps.filter(m => !bannedMaps.includes(m)));
+            });
+            if (!pool.length) return alert("선택 가능한 맵이 없습니다!");
+            lastMap = pool[Math.floor(Math.random() * pool.length)];
+            document.getElementById('selected-map-name').innerText = lastMap;
+            mCount++;
+            document.getElementById('m-count').innerText = `무작위 선택 (${mCount}회)`;
+        }
+
+        function resetTeams() {
+            document.querySelectorAll('.player-input').forEach(i => i.value = '');
+            document.querySelectorAll('.lock-btn-ow').forEach(b => {
+                b.classList.remove('active');
+                b.parentElement.classList.remove('locked-row');
+            });
+            tCount = 0; document.getElementById('t-shuffle-btn').innerText = `🪄 팀 섞기`;
+        }
+
+        function resetMaps() {
+            disabledModes = []; bannedMaps = []; mCount = 0; lastMap = "";
+            renderFilters(); renderMaps();
+            document.getElementById('selected-map-name').innerText = "READY";
+            document.getElementById('m-count').innerText = "SELECTED 전장";
+        }
+
+        function copyTeams() {
+            let t = `[OW 팀 결과]\n`;
+            document.querySelectorAll('.lane-row').forEach(row => {
+                const p = row.querySelector('.lane-tag').innerText;
+                const i = row.querySelectorAll('.player-input');
+                t += `[${p}] ${i[0].value || '미정'} vs ${i[1].value || '미정'}\n`;
+            });
+            navigator.clipboard.writeText(t).then(() => alert("팀 복사 완료!"));
+        }
+
+        function copyMap() {
+            if (!lastMap) return alert("맵을 선택해주세요!");
+            navigator.clipboard.writeText(`📍 오버워치 전장: ${lastMap}`).then(() => alert("맵 복사 완료!"));
+        }
+    </script>
+</body>
+</html>

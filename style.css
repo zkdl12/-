@@ -1,0 +1,102 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+:root {
+    --main-pink: #FFC0CB;
+    --neon-pink: #ff7eb9;
+    --pure-white: #ffffff;
+    --text-main: #1d1d1f;
+    --text-sub: #6e6e73;
+    --glass-bg: rgba(255, 255, 255, 0.75);
+}
+
+body {
+    background: radial-gradient(circle at center, #FFF5F7 0%, var(--main-pink) 100%);
+    color: var(--text-main);
+    font-family: 'Pretendard', sans-serif;
+    letter-spacing: -0.03em;
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+header {
+    width: 100%; height: 56px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 10%; box-sizing: border-box;
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    position: sticky; top: 0; z-index: 1000;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.logo { font-size: 1.1rem; font-weight: 700; cursor: pointer; }
+.logo span { color: var(--neon-pink); font-weight: 800; }
+
+#main-page { text-align: center; padding: 40px 1rem; }
+
+.main-visual { margin-bottom: 40px; }
+.ani-gif {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 4px solid var(--pure-white);
+    box-shadow: 0 15px 35px rgba(244, 114, 182, 0.2);
+    object-fit: cover;
+}
+
+.card-wrapper-container {
+    display: flex; justify-content: center;
+    gap: 24px; margin-top: 30px; flex-wrap: wrap;
+}
+
+.menu-wrapper { display: flex; flex-direction: column; align-items: center; }
+
+.mode-card {
+    background: linear-gradient(135deg, rgba(232, 140, 183, 0.6) 0%, rgba(255, 192, 203, 0.4) 100%);
+    backdrop-filter: blur(10px);
+    width: 280px; height: 160px;
+    border-radius: 32px; padding: 1.8rem; position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: left; box-sizing: border-box;
+    display: flex; flex-direction: column; justify-content: flex-end;
+}
+
+/* 호버 시 세련된 변화 */
+.mode-card:hover { 
+    transform: translateY(-12px); 
+    background: var(--pure-white); 
+    border-color: var(--neon-pink);
+    box-shadow: 0 25px 50px rgba(244, 114, 182, 0.25);
+}
+
+.card-num { 
+    position: absolute; top: 1.2rem; left: 1.5rem; /* 숫자를 왼쪽 위로 옮겨서 더 세련되게 */
+    font-size: 2.5rem; font-weight: 900; 
+    color: rgba(255,255,255,0.25); 
+    transition: 0.4s;
+}
+
+.card-title { 
+    font-size: 1.3rem; font-weight: 800; 
+    color: var(--pure-white); margin-bottom: 8px; 
+    z-index: 1; transition: 0.4s;
+}
+
+.card-desc { 
+    font-size: 0.9rem; color: rgba(255, 255, 255, 0.95); 
+    line-height: 1.5; z-index: 1; transition: 0.4s;
+}
+
+/* 호버 시 텍스트 색상 변화 */
+.mode-card:hover .card-title { color: var(--text-main); }
+.mode-card:hover .card-desc { color: var(--text-sub); }
+.mode-card:hover .card-num { color: rgba(244, 114, 182, 0.1); }
+
+/* 모바일 대응 */
+@media (max-width: 600px) {
+    .mode-card {
+        width: 100%; /* 폰에서는 카드가 시원하게 꽉 참 */
+        max-width: 320px;
+    }
+    #main-page { padding: 40px 1rem; }
+    .ani-gif { width: 100px; height: 100px; }
+}

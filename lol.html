@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANI WORLD - T1 LEGEND Builder</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+        :root {
+            --t1-black: #000000;
+            --t1-dark-gray: #1a1a1a;
+            --t1-red: #e4002b;
+            --t1-gold: #c6a771; /* 이미지의 골드 색상 */
+            --team-blue: #0089ff;
+            --team-red: #ff3e3e;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+
+        body {
+            background: linear-gradient(180deg, #111111 0%, var(--t1-black) 100%);
+            font-family: 'Pretendard', sans-serif;
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; padding: 20px;
+        }
+
+        .container {
+            background: var(--t1-dark-gray);
+            width: 100%; max-width: 600px;
+            border-radius: 30px; padding: 30px;
+            border: 3px solid var(--t1-gold);
+            box-shadow: 0 0 30px rgba(198, 167, 113, 0.3);
+            margin: auto;
+        }
+
+        .top-visual { text-align: center; margin-bottom: 20px; }
+        .game-logo-main { width: 100%; max-height: 250px; border-radius: 20px; object-fit: cover; border: 2px solid var(--t1-gold); }
+
+        header { text-align: center; margin-bottom: 25px; }
+        header h1 { font-size: 1.8rem; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: -1px; }
+        header h1 span { color: var(--t1-red); }
+
+        .team-labels { display: flex; justify-content: space-between; padding: 0 60px; margin-bottom: 15px; font-weight: 900; font-size: 1rem; }
+        .label.blue { color: var(--team-blue); }
+        .label.red { color: var(--team-red); }
+
+        .lane-row { 
+            display: flex; align-items: center; gap: 10px; margin-bottom: 8px; 
+            padding: 8px; border-radius: 18px; 
+            background: rgba(255,255,255,0.03); 
+            transition: 0.3s ease; border: 1px solid rgba(255,255,255,0.05); 
+        }
+
+        /* 🟡 [수정된 부분] 이미지 디자인 반영: 정사각형 골드 포지션 박스 */
+        .lane-tag { 
+            width: 35px; height: 35px; /* 정사각형 크기 */
+            font-size: 0.75rem; font-weight: 900; 
+            color: #000; /* 검은색 글씨 */
+            background: var(--t1-gold); /* 골드 배경 */
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 4px; border: none; flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .player-input { flex: 1; height: 45px; background: #222; border: 2px solid #444; border-radius: 12px; padding: 0 12px; font-weight: 700; font-size: 16px; color: #ffffff; outline: none; width: 40%; text-align: center; transition: 0.2s; }
+        .player-input:focus { border-color: var(--t1-gold); background: #2a2a2a; }
+
+        .lock-btn-t1 { 
+            background-color: #222;
+            background-image: url('t1_logo.png'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: 2px solid #444;
+            border-radius: 12px;
+            height: 45px; width: 45px; cursor: pointer; flex-shrink: 0; 
+            transition: 0.3s ease;
+            filter: grayscale(100%);
+            opacity: 0.4;
+        }
+        
+        .lock-btn-t1.active { 
+            filter: grayscale(0%);
+            opacity: 1;
+            background-color: #000;
+            border-color: var(--t1-red);
+            box-shadow: 0 0 15px var(--t1-red);
+            transform: scale(1.1);
+        }
+
+        .lane-row.locked-row { background-color: rgba(228, 0, 43, 0.15); border-color: var(--t1-red); }
+        .lane-row.locked-row .player-input { background-color: #1a1a1a; color: rgba(255,255,255,0.4); border-color: rgba(228, 0, 43, 0.3); }
+        .lane-row.locked-row .lane-tag { background: #500; color: #fff; }
+
+        footer { margin-top: 25px; display: flex; flex-direction: column; gap: 10px; }
+        .main-btn { background: #000; color: var(--t1-gold); border: 3px solid var(--t1-gold); padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+        .main-btn:hover { background: var(--t1-gold); color: #000; transform: scale(0.98); }
+
+        .footer-buttons { display: flex; gap: 10px; }
+        .sub-btn { flex: 1; background: #222; border: 2px solid #444; padding: 14px; border-radius: 15px; font-weight: 800; cursor: pointer; font-size: 0.95rem; color: #aaa; transition: 0.2s; }
+        .highlight { background: rgba(228, 0, 43, 0.1); border-color: rgba(228, 0, 43, 0.5); color: var(--team-red); }
+
+        .home-btn-text { background: transparent; color: #888; border: none; cursor: pointer; font-weight: 700; margin-top: 20px; width: 100%; font-size: 0.95rem; text-decoration: underline; }
+
+        @media (max-width: 480px) {
+            .container { padding: 25px 15px; }
+            .lock-btn-t1 { width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-visual">
+            <img src="https://stimg.sooplive.com/NORMAL_BBS/6/7137696/958869b0582499786.gif" class="game-logo-main">
+        </div>
+
+        <header>
+            <h1> 리그오브레전드 <span>팀 짜기</span></h1>
+        </header>
+
+        <div class="team-labels">
+            <span class="label blue">🔵 BLUE TEAM</span>
+            <span class="label red">🔴 RED TEAM</span>
+        </div>
+
+        <div id="builder-area">
+            <div id="lane-rows-ck"></div>
+        </div>
+
+        <footer>
+            <button class="main-btn shuffle" id="shuffle-btn" onclick="shuffleTeams()">🪄 SHUFFLE</button>
+            <div class="footer-buttons">
+                <button class="sub-btn" onclick="resetInputs()">🔄 RESET</button>
+                <button class="sub-btn highlight" onclick="copyResult()">📋 결과 복사</button>
+            </div>
+        </footer>
+        
+        <button class="home-btn-text" onclick="location.href='team.html'">← 게임 선택으로 돌아가기</button>
+    </div>
+
+    <script>
+        /* 🟡 이미지와 동일하게 영문 포지션으로 변경 */
+        const lanes = ['TOP', 'JNG', 'MID', 'ADC', 'SPT'];
+        let shuffleCount = 0;
+
+        window.onload = function() {
+            const container = document.getElementById('lane-rows-ck');
+            container.innerHTML = lanes.map(lane => `
+                <div class="lane-row">
+                    <div class="lane-tag">${lane}</div>
+                    <input type="text" class="player-input" placeholder="BLUE ${lane}">
+                    <button class="lock-btn-t1" onclick="toggleLock(this)"></button>
+                    <input type="text" class="player-input" placeholder="RED ${lane}">
+                </div>
+            `).join('');
+        };
+
+        function toggleLock(btn) {
+            btn.classList.toggle('active');
+            const row = btn.parentElement;
+            row.classList.toggle('locked-row');
+        }
+
+        function shuffleTeams() {
+            const rows = document.querySelectorAll('.lane-row');
+            rows.forEach(row => {
+                const lockBtn = row.querySelector('.lock-btn-t1');
+                if (!lockBtn.classList.contains('active')) {
+                    const inputs = row.querySelectorAll('.player-input');
+                    if (Math.random() > 0.5) {
+                        const temp = inputs[0].value;
+                        inputs[0].value = inputs[1].value;
+                        inputs[1].value = temp;
+                    }
+                }
+            });
+            shuffleCount++;
+            document.getElementById('shuffle-btn').innerText = `🪄 SHUFFLE (${shuffleCount}회)`;
+        }
+
+       function copyResult() {
+            const rows = document.querySelectorAll('.lane-row');
+            let text = `[블루팀] vs [레드팀]\n`;
+            
+            rows.forEach(row => {
+                const tag = row.querySelector('.lane-tag').innerText;
+                const inputs = row.querySelectorAll('.player-input');
+                
+                const bluePlayer = inputs[0].value || '비어있음';
+                const redPlayer = inputs[1].value || '비어있음';
+                
+                text += `[${tag}] ${bluePlayer} vs ${redPlayer}\n`;
+            });
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert("결과가 복사되었습니다! ✨");
+            }).catch(err => {
+                alert("복사에 실패했습니다.");
+            });
+        }
+
+        function resetInputs() {
+            document.querySelectorAll('.player-input').forEach(input => input.value = '');
+            document.querySelectorAll('.lock-btn-t1').forEach(btn => {
+                btn.classList.remove('active');
+                btn.parentElement.classList.remove('locked-row');
+            });
+            shuffleCount = 0;
+            document.getElementById('shuffle-btn').innerText = `🪄 SHUFFLE`;
+        }
+    </script>
+</body>
+</html>
