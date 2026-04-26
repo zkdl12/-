@@ -94,6 +94,18 @@
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        @media (max-width: 768px) {
+            .main-content-wrapper {
+                flex-direction: column; /* 가로 배치를 세로 배치로 변경 */
+            }
+            .section-card {
+                min-height: auto; /* 고정 높이 해제 */
+                width: 100%;
+            }
+            .mode-filter-grid {
+                grid-template-columns: repeat(2, 1fr); /* 맵 필터를 2열로 변경하여 터치 영역 확보 */
+            }
+        }
     </style>
 </head>
 <body>
