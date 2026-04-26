@@ -72,15 +72,14 @@
         
         .lock-btn-ow { 
             width: 32px; min-width: 32px; height: 40px;
-            background: #222 url('ow_logo.png') no-repeat center / 60%; 
+            background: #222 url('owr.png') no-repeat center / 60%; 
             border: 1px solid #444; cursor: pointer; opacity: 0.3; 
             border-radius: 8px; filter: grayscale(100%); transition: 0.2s; 
             background-size: contain;
         }
         
         /* 자물쇠 이미지가 없을 경우를 대비한 대체 아이콘 */
-        .lock-btn-ow::after { content: '🔓'; font-size: 12px; display: block; }
-        .lock-btn-ow.active::after { content: '🔒'; }
+       
 
         .lock-btn-ow.active { opacity: 1; filter: grayscale(0%); border-color: var(--ow-orange); box-shadow: 0 0 8px var(--ow-orange); }
         .lane-row.locked-row { background: rgba(249, 158, 26, 0.1); border-color: var(--ow-orange); }
