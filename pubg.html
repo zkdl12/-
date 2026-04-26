@@ -117,9 +117,33 @@
         .home-btn-text { background: transparent; color: #555; border: none; cursor: pointer; font-weight: 700; margin: 20px auto; display: block; text-decoration: underline; }
         
         @media (max-width: 480px) {
-            .content-padding { padding: 20px 15px; }
-            .team-labels { padding: 0 35px; }
+        body { padding: 10px; } /* 외부 여백 감소 */
+        .container { width: 100%; clip-path: none; } /* 모바일에서 가로 꽉 차게 (선택사항: 각진 디자인 유지하고 싶으면 그대로 두셔도 됩니다) */
+        .content-padding { padding: 15px 10px; }
+        
+        .team-labels { padding: 0 10px; justify-content: space-around; }
+        .label { font-size: 0.8rem; padding: 4px 8px; }
+    
+        .lane-row { 
+            gap: 5px; /* 간격 축소 */
+            padding: 8px 5px; 
         }
+        .lane-tag { 
+            width: 50px; /* 태그 너비 축소 */
+            font-size: 0.7rem; 
+        }
+        .player-input { 
+            font-size: 0.9rem; 
+            padding: 0 5px; 
+            min-width: 0; /* flex 환경에서 찌그러짐 방지 */
+        }
+        .lock-btn-pubg { 
+            width: 40px; /* 버튼 크기 소폭 축소 */
+            height: 40px; 
+        }
+        
+        .main-btn { padding: 15px; font-size: 1rem; }
+    }
     </style>
 </head>
 <body>
