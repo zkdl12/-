@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>아니 캔버스: 서바이벌</title>
+    <style>
+        /* [현대 미술관 프리미엄 디자인 - 모바일 반응형] */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;900&display=swap');
+
+        :root { 
+            --wall: #080808; 
+            --floor: #000000; 
+            --gold: #af9042; 
+            --text: #ffffff;
+            --sub-text: #555;
+        }
+
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--wall); color: var(--text); font-family: 'Noto Serif KR', serif; }
+        
+        /* 메인 레이아웃: 기본 가로 배열, 모바일에서 세로 배열 */
+        #main-wrapper { display: flex; flex-direction: row; width: 100%; min-height: 100vh; overflow-x: hidden; }
+
+        /* [좌측] 도슨트 패널 */
+        #docent-panel { 
+            width: 280px; background: rgba(10,10,12,0.95); border-right: 1px solid #1a1a1a; 
+            padding: 25px 20px; display: flex; flex-direction: column; flex-shrink: 0;
+        }
+        .gallery-title { 
+            font-size: 1.3rem; font-weight: 900; color: var(--gold); text-align: center; 
+            margin-bottom: 30px; letter-spacing: 3px; border-bottom: 1px solid #222; padding-bottom: 15px;
+        }
+        
+        .label-tag { font-size: 0.7rem; color: var(--sub-text); margin-bottom: 8px; font-weight: bold; letter-spacing: 1px; }
+
+        textarea { 
+            height: 120px; background: #000; border: 1px solid #222; border-radius: 4px; 
+            color: #fff; padding: 12px; font-size: 0.9rem; resize: none; outline: none; margin-bottom: 15px;
+            font-family: sans-serif;
+        }
+        textarea:focus { border-color: var(--gold); }
+
+        .btn-exhibit { 
+            padding: 15px; background: transparent; border: 1px solid var(--gold); 
+            color: var(--gold); font-weight: 900; font-size: 1rem; cursor: pointer; transition: 0.3s;
+            letter-spacing: 2px;
+        }
+        .btn-exhibit:hover { background: var(--gold); color: #000; }
+
+        /* 실시간 리포트 */
+        #live-report { flex: 1; overflow-y: auto; margin-top: 20px; border-top: 1px solid #1a1a1a; padding-top: 15px; }
+        .score-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px dotted #1a1a1a; font-size: 0.75rem; }
+        .chip { width: 4px; height: 10px; margin-right: 10px; }
+
+        /* [중앙] 메인 전시장 */
+        #gallery-main { 
+            flex: 1; display: flex; align-items: center; justify-content: center; 
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            padding: 20px; min-height: 400px;
+        }
+        #masterpiece-wrap { 
+            position: relative; padding: 10px; background: #000; 
+            box-shadow: 0 0 50px rgba(0,0,0,1); border: 1px solid #1a1a1a;
+            max-width: 100%;
+        }
+        canvas { image-rendering: pixelated; display: block; max-width: 100%; height: auto !important; }
+
+        /* [우측] 고양이 작품관 */
+        #side-exhibition { 
+            width: 300px; background: #080808; border-left: 1px solid #1a1a1a; 
+            display: flex; flex-direction: column; align-items: center; padding: 30px 20px; flex-shrink: 0;
+        }
+        .cat-frame { 
+            width: 100%; border: 1px solid #222; padding: 5px; background: #000;
+            box-shadow: 0 20px 50px rgba(0,0,0,1);
+        }
+        #cat-gif { width: 100%; display: block; }
+        .exhibit-info { margin-top: 20px; color: #333; font-size: 0.7rem; text-align: center; letter-spacing: 2px; line-height: 1.5; }
+
+        /* [RESULT] 최종 결과 모달 */
+        #result-modal { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 360px; background: #fff; border-top: 8px solid var(--gold); 
+            padding: 30px; border-radius: 4px; box-shadow: 0 0 200px rgba(0,0,0,1); z-index: 100; color: #000;
+        }
+        .final-title { font-weight: 900; font-size: 1.4rem; text-align: center; margin-bottom: 20px; color: #000; }
+        .rank-row { display: flex; justify-content: space-between; padding: 10px 5px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+
+        /* [모바일 대응 미디어 쿼리] */
+        @media (max-width: 1024px) {
+            #main-wrapper { flex-direction: column; overflow-y: auto; }
+            #docent-panel, #side-exhibition { width: 100%; box-sizing: border-box; border: none; }
+            #docent-panel { border-bottom: 1px solid #1a1a1a; order: 2; }
+            #gallery-main { order: 1; padding: 40px 10px; }
+            #side-exhibition { order: 3; border-top: 1px solid #1a1a1a; }
+            canvas { width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-wrapper">
+        <div id="docent-panel">
+            <div class="gallery-title">아니 캔버스</div>
+            
+            <div class="label-tag">참가자 명단 (공백으로 구분)</div>
+            <textarea id="nameInput" placeholder="이름 이름 이름..."></textarea>
+            
+            <button class="btn-exhibit" onclick="initNewExhibition()">작품 생성 시작</button>
+            
+            <div class="label-tag" style="margin-top:30px;">실시간 점유 리포트</div>
+            <div id="live-report"></div>
+        </div>
+
+        <div id="gallery-main">
+            <div id="masterpiece-wrap">
+                <canvas id="warCanvas"></canvas>
+            </div>
+            
+            <div id="result-modal">
+                <div class="final-title">최종 점유 순위</div>
+                <div id="resultContent"></div>
+                <button style="width:100%; margin-top:20px; padding:15px; background:#080808; color:#fff; border:none; font-weight:900; cursor:pointer;" onclick="document.getElementById('result-modal').style.display='none'">확인</button>
+            </div>
+        </div>
+
+        <div id="side-exhibition">
+            <div class="cat-frame">
+                <img id="cat-gif" src="https://stimg.sooplive.com/NORMAL_BBS/6/7137696/999369af035d4f055.gif">
+            </div>
+            <div class="exhibit-info">특별 기획전 :<br>잠자는 임아니 (2026)</div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('warCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const size = 100;
+        let cell = 6;
+        let grid = [], mask = [], teams = [], running = false, totalMaskPixels = 0;
+        let animationId = null;
+
+        const shapes = ['🐘', '🐈', '🐕', '🐇', '🦋', '🦖', '🦁', '🦉', '🐢', '🐬', '🐙', '🐴', '🐊', '🐯'];
+
+        // 초기 캔버스 사이즈 설정
+        canvas.width = canvas.height = size * cell;
+
+        function initNewExhibition() {
+            const input = document.getElementById('nameInput').value.trim();
+            if(!input) return alert("참가자 명단을 입력해 주세요.");
+
+            running = false;
+            if(animationId) cancelAnimationFrame(animationId);
+            document.getElementById('result-modal').style.display = 'none';
+
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = tempCanvas.height = size;
+            tempCtx.font = "80px serif";
+            tempCtx.textAlign = "center";
+            tempCtx.textBaseline = "middle";
+            tempCtx.fillText(shape, size/2, size/2);
+
+            const data = tempCtx.getImageData(0, 0, size, size).data;
+            mask = Array(size).fill().map(() => Array(size).fill(0));
+            totalMaskPixels = 0;
+
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    if (data[(y * size + x) * 4 + 3] > 50) {
+                        mask[x][y] = 1;
+                        totalMaskPixels++;
+                    }
+                }
+            }
+
+            // 참가자 이름 처리: 공백(스페이스바)으로 구분
+            const names = input.split(/\s+/).filter(n => n.trim());
+            teams = names.map((name, i) => ({
+                name: name.trim(),
+                color: `hsl(${(i * (360 / names.length)) % 360}, 85%, 60%)`,
+                score: 0,
+                share: 0
+            }));
+
+            grid = Array(size).fill().map(() => Array(size).fill(-1));
+            
+            teams.forEach((_, idx) => {
+                let found = false;
+                while (!found) {
+                    let rx = Math.floor(Math.random() * size), ry = Math.floor(Math.random() * size);
+                    if (mask[rx][ry] === 1 && grid[rx][ry] === -1) {
+                        grid[rx][ry] = idx;
+                        found = true;
+                    }
+                }
+            });
+
+            running = true;
+            loop();
+        }
+
+        function loop() {
+            if (!running) return;
+
+            // 역전 로직 포함 연산 (약 800회)
+            for (let i = 0; i < 800; i++) {
+                const x = Math.floor(Math.random() * size), y = Math.floor(Math.random() * size);
+                const teamIdx = grid[x][y];
+                
+                if (teamIdx !== -1) {
+                    const dir = [[0,1],[0,-1],[1,0],[-1,0]];
+                    const [dx, dy] = dir[Math.floor(Math.random()*4)];
+                    const nx = x + dx, ny = y + dy;
+
+                    if (nx >= 0 && nx < size && ny >= 0 && ny < size && mask[nx][ny] === 1) {
+                        const teamShare = teams[teamIdx].share || 0;
+                        const threshold = 0.2 + (teamShare * 0.7); // 언더독 부스트
+                        
+                        if (Math.random() > threshold) {
+                            grid[nx][ny] = teamIdx;
+                        }
+                    }
+                }
+            }
+
+            draw();
+            updateLiveStatus();
+            animationId = requestAnimationFrame(loop);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let x = 0; x < size; x++) {
+                for (let y = 0; y < size; y++) {
+                    if (mask[x][y] === 1) {
+                        ctx.fillStyle = grid[x][y] === -1 ? '#111' : teams[grid[x][y]].color;
+                        ctx.fillRect(x * cell, y * cell, cell - 1, cell - 1);
+                    }
+                }
+            }
+        }
+
+        function updateLiveStatus() {
+            const counts = Array(teams.length).fill(0);
+            let occupied = 0;
+            grid.forEach(row => row.forEach(val => { if(val !== -1) { counts[val]++; occupied++; } }));
+
+            teams.forEach((t, i) => {
+                t.score = counts[i];
+                t.share = t.score / totalMaskPixels;
+            });
+
+            const sorted = [...teams].sort((a,b) => b.score - a.score);
+            
+            document.getElementById('live-report').innerHTML = sorted.map(t => `
+                <div class="score-row">
+                    <div class="chip" style="background:${t.color}"></div>
+                    <span style="flex:1; color:#777;">${t.name}</span>
+                    <span style="font-weight:bold; color:var(--gold);">${(t.share * 100).toFixed(1)}%</span>
+                </div>
+            `).join('');
+
+            if (occupied >= totalMaskPixels && running) {
+                running = false;
+                showFinal(sorted);
+            }
+        }
+
+        function showFinal(sorted) {
+            const modal = document.getElementById('result-modal');
+            const content = document.getElementById('resultContent');
+            content.innerHTML = sorted.slice(0, 10).map((t, i) => `
+                <div class="rank-row">
+                    <span style="font-weight:900; color:var(--gold);">#${i+1}</span>
+                    <span style="font-weight:bold;">${t.name}</span>
+                    <span>${(t.share * 100).toFixed(1)}%</span>
+                </div>
+            `).join('');
+            modal.style.display = 'block';
+        }
+
+        // 초기 화면
+        ctx.fillStyle = '#222';
+        ctx.textAlign = 'center';
+        ctx.font = '16px serif';
+        ctx.fillText('시스템 대기 중...', canvas.width/2, canvas.height/2);
+    </script>
+</body>
+</html>
