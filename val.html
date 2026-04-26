@@ -95,9 +95,46 @@
         .home-btn { background: transparent; color: #666; border: none; cursor: pointer; font-weight: 700; margin: 25px auto; display: block; text-decoration: underline; width: 100%; text-align: center;}
 
         @media (max-width: 850px) {
-            .main-content-wrapper { flex-direction: column; }
-            .section-team, .section-map { min-height: auto; width: 100%; }
-            .map-grid { grid-template-columns: repeat(3, 1fr); }
+            body { padding: 10px; }
+            .main-content-wrapper { flex-direction: column; gap: 15px; }
+            .section-team, .section-map { min-height: auto; width: 100%; padding: 15px; }
+        
+            /* 팀 배치 모바일 최적화 */
+            .team-labels { padding: 0 10px; justify-content: space-around; }
+            .lane-row { 
+                gap: 6px; 
+                padding: 8px; 
+            }
+            .lane-tag { 
+                width: 60px; 
+                font-size: 0.75rem; 
+            }
+            .player-input { 
+                font-size: 0.9rem; 
+                min-width: 0; 
+            }
+            .lock-btn-val { 
+                width: 40px; 
+                height: 45px; 
+            }
+        
+            /* 맵 그리드 모바일 최적화 */
+            .map-grid { 
+                grid-template-columns: repeat(3, 1fr); /* 3열 배치로 변경 */
+                gap: 6px; 
+            }
+            .map-item { 
+                padding: 10px 2px; 
+                font-size: 0.7rem; 
+            }
+        
+            .main-action-btn { padding: 15px; font-size: 1rem; }
+        }
+        
+        /* 아주 작은 화면 (아이폰 SE 등) 대응 */
+        @media (max-width: 380px) {
+            .map-grid { grid-template-columns: repeat(2, 1fr); } /* 더 좁으면 2열로 */
+            .lane-tag { display: none; } /* 필요시 태그 숨김 혹은 더 축소 */
         }
     </style>
 </head>
