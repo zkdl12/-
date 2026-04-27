@@ -13,6 +13,31 @@
             --val-offwhite: #ece8e1;
         }
 
+        /* 🔴 발로란트 전용 애니메이션 */
+        @keyframes val-shuffle {
+            0% { transform: skew(0deg); filter: brightness(1); }
+            20% { transform: skew(3deg); filter: brightness(1.5) contrast(1.2); }
+            40% { transform: skew(-3deg); opacity: 0.8; }
+            60% { transform: translateX(2px); filter: hue-rotate(10deg); }
+            100% { transform: skew(0deg); filter: brightness(1); }
+        }
+
+        @keyframes val-scan-line {
+            0% { border-bottom: 2px solid #555; }
+            50% { border-bottom: 2px solid var(--val-red); box-shadow: 0 5px 10px rgba(255, 70, 85, 0.3); }
+            100% { border-bottom: 2px solid #555; }
+        }
+
+        @keyframes val-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.99); }
+            100% { transform: scale(1); }
+        }
+
+        .shuffle-active { animation: val-shuffle 0.3s ease-in-out; }
+        .scanning-active { animation: val-scan-line 0.4s infinite; }
+        .pulse-active { animation: val-pulse 0.2s ease-in-out; }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body {
@@ -26,6 +51,7 @@
         .container {
             width: 100%; max-width: 1100px;
             margin: auto;
+            transition: transform 0.2s;
         }
 
         header { text-align: center; margin-bottom: 20px; }
@@ -46,7 +72,6 @@
             align-items: flex-start;
         }
 
-        /* 공통 섹션 스타일 */
         .section-team, .section-map {
             background: rgba(15, 25, 35, 0.95);
             border-radius: 15px; padding: 25px;
@@ -54,6 +79,7 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.5);
             min-height: 580px;
             display: flex; flex-direction: column;
+            transition: 0.3s;
         }
 
         .section-team { flex: 1.5; }
@@ -63,9 +89,9 @@
         .section-title::before { content: ""; width: 8px; height: 8px; background: var(--val-red); }
 
         .team-labels { display: flex; justify-content: space-between; padding: 0 60px; margin-bottom: 12px; font-weight: 900; font-size: 0.9rem; color: #888; }
-        .lane-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 12px; background: rgba(255,255,255,0.04); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); }
+        .lane-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 12px; background: rgba(255,255,255,0.04); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); transition: 0.2s; }
         .lane-tag { width: 80px; font-size: 0.8rem; font-weight: 800; color: #fff; text-align: center; background: #333; padding: 8px 0; border-radius: 8px; }
-        .player-input { flex: 1; height: 45px; background: transparent; border: none; border-bottom: 2px solid #555; padding: 0 10px; font-weight: 700; font-size: 16px; color: #fff; outline: none; text-align: center; }
+        .player-input { flex: 1; height: 45px; background: transparent; border: none; border-bottom: 2px solid #555; padding: 0 10px; font-weight: 700; font-size: 16px; color: #fff; outline: none; text-align: center; transition: 0.3s; }
         .player-input:focus { border-bottom-color: var(--val-red); background: rgba(255,70,85,0.05); }
 
         .lock-btn-val { 
@@ -75,21 +101,22 @@
         .lock-btn-val.active { filter: grayscale(0%); opacity: 1; border-color: var(--val-red); background-color: #000; box-shadow: 0 0 10px var(--val-red); }
         .lane-row.locked-row { background: rgba(255,70,85,0.15); border-color: var(--val-red); }
 
-        /* 맵 섹션 세부 스타일 */
         .map-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
         .map-item { background: #222; padding: 12px 2px; font-size: 0.75rem; font-weight: 800; text-align: center; cursor: pointer; border: 1px solid #333; color: #888; border-radius: 8px; transition: 0.2s; }
         .map-item.active { background: rgba(255, 70, 85, 0.1); color: #fff; border-color: var(--val-red); }
         .map-item.banned { background: #111; color: #444; border-color: #222; text-decoration: line-through; }
 
-        .map-result-box { background: #000; border: 1px solid var(--val-red); padding: 20px; text-align: center; margin-top: auto; margin-bottom: 20px; border-radius: 15px; box-shadow: inset 0 0 15px rgba(255,70,85,0.2); }
-        .map-result-box p { font-size: 0.7rem; color: #777; margin-bottom: 5px; }
-        .map-result-box h2 { font-size: 1.6rem; color: var(--val-red); letter-spacing: 1px; }
+        .map-result-box { background: #000; border: 1px solid var(--val-red); padding: 20px; text-align: center; margin-top: auto; margin-bottom: 20px; border-radius: 15px; box-shadow: inset 0 0 15px rgba(255,70,85,0.2); position: relative; overflow: hidden; }
+        .map-result-box p { font-size: 0.7rem; color: #777; margin-bottom: 5px; z-index: 2; position: relative; }
+        .map-result-box h2 { font-size: 1.6rem; color: var(--val-red); letter-spacing: 1px; z-index: 2; position: relative; }
 
         .btn-container { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-        .main-action-btn { background: var(--val-red); color: white; border: none; padding: 18px; font-weight: 900; cursor: pointer; font-size: 1.1rem; text-transform: uppercase; border-radius: 12px; transition: 0.2s; }
-        .main-action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 70, 85, 0.3); }
+        .main-action-btn { background: var(--val-red); color: white; border: none; padding: 18px; font-weight: 900; cursor: pointer; font-size: 1.1rem; text-transform: uppercase; border-radius: 12px; transition: 0.2s; position: relative; overflow: hidden; }
+        .main-action-btn:active { transform: scale(0.96); }
+
         .sub-btn-group { display: flex; gap: 8px; }
-        .sub-action-btn { flex: 1; background: #333; border: 1px solid #444; padding: 12px; font-weight: 800; cursor: pointer; font-size: 0.85rem; color: #aaa; border-radius: 10px; }
+        .sub-action-btn { flex: 1; background: #333; border: 1px solid #444; padding: 12px; font-weight: 800; cursor: pointer; font-size: 0.85rem; color: #aaa; border-radius: 10px; transition: 0.2s; }
+        .sub-action-btn:active { transform: scale(0.95); }
         .copy-btn { border-color: var(--val-red); color: var(--val-red); }
 
         .home-btn { background: transparent; color: #666; border: none; cursor: pointer; font-weight: 700; margin: 25px auto; display: block; text-decoration: underline; width: 100%; text-align: center;}
@@ -98,48 +125,19 @@
             body { padding: 10px; }
             .main-content-wrapper { flex-direction: column; gap: 15px; }
             .section-team, .section-map { min-height: auto; width: 100%; padding: 15px; }
-        
-            /* 팀 배치 모바일 최적화 */
             .team-labels { padding: 0 10px; justify-content: space-around; }
-            .lane-row { 
-                gap: 6px; 
-                padding: 8px; 
-            }
-            .lane-tag { 
-                width: 60px; 
-                font-size: 0.75rem; 
-            }
-            .player-input { 
-                font-size: 0.9rem; 
-                min-width: 0; 
-            }
-            .lock-btn-val { 
-                width: 40px; 
-                height: 45px; 
-            }
-        
-            /* 맵 그리드 모바일 최적화 */
-            .map-grid { 
-                grid-template-columns: repeat(3, 1fr); /* 3열 배치로 변경 */
-                gap: 6px; 
-            }
-            .map-item { 
-                padding: 10px 2px; 
-                font-size: 0.7rem; 
-            }
-        
+            .lane-row { gap: 6px; padding: 8px; }
+            .lane-tag { width: 60px; font-size: 0.75rem; }
+            .player-input { font-size: 0.9rem; min-width: 0; }
+            .lock-btn-val { width: 40px; height: 45px; }
+            .map-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .map-item { padding: 10px 2px; font-size: 0.7rem; }
             .main-action-btn { padding: 15px; font-size: 1rem; }
-        }
-        
-        /* 아주 작은 화면 (아이폰 SE 등) 대응 */
-        @media (max-width: 380px) {
-            .map-grid { grid-template-columns: repeat(2, 1fr); } /* 더 좁으면 2열로 */
-            .lane-tag { display: none; } /* 필요시 태그 숨김 혹은 더 축소 */
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="main-container">
         <header>
             <img src="https://stimg.sooplive.com/NORMAL_BBS/6/7137696/433069c82d41aa11a.gif" class="game-logo-main">
             <h1 style="font-weight: 900; letter-spacing: 2px;">VALORANT <span style="color:var(--val-red)">팀 짜기</span></h1>
@@ -164,7 +162,7 @@
                 <div class="section-title">맵 선택 (클릭하여 제외)</div>
                 <div id="map-grid" class="map-grid"></div>
                 
-                <div class="map-result-box">
+                <div class="map-result-box" id="map-result-box">
                     <p id="m-shuffle-count">READY TO SCAN</p>
                     <h2 id="selected-map-name">READY</h2>
                 </div>
@@ -219,18 +217,45 @@
         }
 
         function shuffleTeams() {
+            const container = document.getElementById('main-container');
+            container.classList.add('pulse-active');
+            setTimeout(() => container.classList.remove('pulse-active'), 200);
+
             document.querySelectorAll('.lane-row').forEach(row => {
                 if (!row.querySelector('.lock-btn-val').classList.contains('active')) {
                     const inputs = row.querySelectorAll('.player-input');
-                    if (Math.random() > 0.5) {
-                        const tmp = inputs[0].value;
-                        inputs[0].value = inputs[1].value;
-                        inputs[1].value = tmp;
-                    }
+                    
+                    // 글리치 효과 적용
+                    inputs.forEach(input => input.classList.add('shuffle-active'));
+                    
+                    setTimeout(() => {
+                        if (Math.random() > 0.5) {
+                            const tmp = inputs[0].value;
+                            inputs[0].value = inputs[1].value;
+                            inputs[1].value = tmp;
+                        }
+                        inputs.forEach(input => input.classList.remove('shuffle-active'));
+                    }, 300);
                 }
             });
             teamCount++;
             document.getElementById('t-shuffle-btn').innerText = `🪄 팀 섞기 (${teamCount}회)`;
+        }
+
+        function shuffleMap() {
+            const avail = maps.filter(m => !bannedMaps.includes(m));
+            if (!avail.length) return alert("제외되지 않은 맵이 없습니다!");
+            
+            const resultBox = document.getElementById('map-result-box');
+            resultBox.classList.add('scanning-active');
+            
+            setTimeout(() => {
+                lastMap = avail[Math.floor(Math.random() * avail.length)];
+                document.getElementById('selected-map-name').innerText = lastMap;
+                mapCount++;
+                document.getElementById('m-shuffle-count').innerText = `SCANNING COMPLETE (${mapCount}회)`;
+                resultBox.classList.remove('scanning-active');
+            }, 400);
         }
 
         function resetTeams() {
@@ -243,6 +268,16 @@
             document.getElementById('t-shuffle-btn').innerText = `🪄 팀 섞기`;
         }
 
+        function resetMaps() {
+            document.querySelectorAll('.map-item').forEach(m => { 
+                m.classList.remove('banned');
+                m.classList.add('active'); 
+            });
+            bannedMaps = []; mapCount = 0; lastMap = "";
+            document.getElementById('selected-map-name').innerText = "READY";
+            document.getElementById('m-shuffle-count').innerText = "READY TO SCAN";
+        }
+
         function copyTeams() {
             let t = `[TEAM A] vs [TEAM B]\n`;
             document.querySelectorAll('.lane-row').forEach(row => {
@@ -251,22 +286,6 @@
                 t += `[${pos}] ${i[0].value || '미정'} vs ${i[1].value || '미정'}\n`;
             });
             navigator.clipboard.writeText(t).then(() => alert("팀 결과 복사 완료!"));
-        }
-
-        function shuffleMap() {
-            const avail = maps.filter(m => !bannedMaps.includes(m));
-            if (!avail.length) return alert("제외되지 않은 맵이 없습니다!");
-            lastMap = avail[Math.floor(Math.random() * avail.length)];
-            document.getElementById('selected-map-name').innerText = lastMap;
-            mapCount++;
-            document.getElementById('m-shuffle-count').innerText = `SCANNING COMPLETE (${mapCount}회)`;
-        }
-
-        function resetMaps() {
-            document.querySelectorAll('.map-item').forEach(m => { m.classList.replace('banned', 'active'); });
-            bannedMaps = []; mapCount = 0; lastMap = "";
-            document.getElementById('selected-map-name').innerText = "READY";
-            document.getElementById('m-shuffle-count').innerText = "READY TO SCAN";
         }
 
         function copyMap() {
