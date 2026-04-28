@@ -2,122 +2,80 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANI.LAB - 통합 관리자</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
         :root { --bg: #fff0f3; --accent: #ff007f; --sub: #ff85a1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
-        body { background: var(--bg); padding: 20px; color: #333; }
-        
-        .admin-wrapper { max-width: 900px; margin: 0 auto; }
-
-        /* 🚀 상단 네비게이션 버튼 (다시 추가) */
+        body { background: var(--bg); padding: 20px; }
+        .wrapper { max-width: 900px; margin: 0 auto; }
         .nav-bar { display: flex; gap: 10px; margin-bottom: 20px; justify-content: flex-end; }
-        .nav-btn { 
-            text-decoration: none; padding: 10px 18px; border-radius: 10px; 
-            font-size: 0.85rem; font-weight: 800; transition: 0.3s;
-            background: #fff; color: var(--sub); border: 2px solid #ffe4e9;
-        }
-        .nav-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-        /* 탭 메뉴 */
-        .tab-menu { display: flex; gap: 10px; margin-bottom: 25px; }
-        .tab-btn { 
-            flex: 1; padding: 18px; background: #fff; border: 3px solid #ffe4e9; 
-            border-radius: 20px; cursor: pointer; font-weight: 900; color: var(--sub); transition: 0.3s; 
-        }
-        .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 10px 20px rgba(255,0,127,0.1); }
-
-        .card { 
-            background: #fff; padding: 30px; border-radius: 30px; 
-            border: 3px solid #ffe4e9; box-shadow: 0 20px 40px rgba(255,0,127,0.05); 
-            margin-bottom: 30px; 
-        }
-        
-        h2 { font-size: 1.6rem; font-weight: 900; color: var(--accent); margin-bottom: 25px; border-left: 8px solid var(--accent); padding-left: 20px; }
-        
+        .nav-btn { text-decoration: none; padding: 10px 18px; border-radius: 10px; font-size: 0.8rem; font-weight: 800; background: #fff; color: var(--sub); border: 2px solid #ffe4e9; }
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 15px; border-radius: 10px; border: 2px solid #ffe4e9; cursor: pointer; font-weight: 800; background: #fff; color: var(--sub); }
+        .tab-btn.active { background: var(--accent); color: #fff; }
+        .card { background: #fff; padding: 30px; border-radius: 20px; border: 3px solid #ffe4e9; margin-bottom: 30px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .box { display: flex; flex-direction: column; gap: 8px; }
-        .full { grid-column: span 2; }
-        
-        label { font-size: 0.85rem; font-weight: 800; color: var(--sub); }
-        input, select { padding: 15px; border: 2px solid #ffe4e9; border-radius: 12px; outline: none; background: #fff9fa; font-size: 1rem; }
-        input:focus { border-color: var(--accent); background: #fff; }
-        
-        .submit-btn { width: 100%; padding: 20px; background: var(--accent); color: #fff; border: none; border-radius: 15px; font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .submit-btn:hover { transform: translateY(-3px); filter: brightness(1.05); }
-
+        .box { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 0.8rem; font-weight: 800; color: var(--sub); }
+        input, select { padding: 12px; border: 2px solid #eee; border-radius: 10px; outline: none; font-size: 1rem; }
+        .submit-btn { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; margin-top: 20px; }
         .table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
         .table th, .table td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
-        .action-btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 0.75rem; transition: 0.2s; }
-        .edit-btn { background: #eee; color: #666; margin-right: 5px; }
-        .del-btn { background: #ffebeb; color: #ff4d4d; }
-        .action-btn:hover { filter: brightness(0.9); }
-
-        .form-section { display: none; }
-        .form-section.active { display: block; }
-
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .full { grid-column: span 1; } }
+        .action-btn { padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; font-weight: 800; font-size: 0.7rem; }
+        .edit { background: #eee; color: #666; margin-right: 5px; }
+        .del { background: #ffebeb; color: #ff4d4d; }
     </style>
 </head>
 <body>
-
-<div class="admin-wrapper">
+<div class="wrapper">
     <div class="nav-bar">
         <a href="index.html" class="nav-btn">메인 화면</a>
-        <a href="record.html" class="nav-btn">전적 페이지 확인</a>
+        <a href="record.html" class="nav-btn">전적 페이지</a>
     </div>
-
     <div class="tab-menu">
-        <button class="tab-btn active" id="ck-tab" onclick="switchTab('ck')">🏆 CK 전적 관리</button>
-        <button class="tab-btn" id="solo-tab" onclick="switchTab('solo')">🔥 솔랭내기 관리</button>
+        <button class="tab-btn active" id="ck-tab" onclick="switchTab('ck')">🏆 CK 입력</button>
+        <button class="tab-btn" id="solo-tab" onclick="switchTab('solo')">🔥 솔랭내기 입력</button>
     </div>
-
     <div class="card">
-        <h2 id="form-title">데이터 입력</h2>
+        <h2 id="form-title" style="color:var(--accent); margin-bottom:20px;">데이터 입력</h2>
         <form id="main-form">
             <input type="hidden" id="edit-id">
-            
             <div id="ck-fields" class="grid">
                 <div class="box"><label>날짜</label><input type="date" id="ck-date"></div>
-                <div class="box"><label>대회명</label><input type="text" id="ck-title" placeholder="멸망전 등"></div>
+                <div class="box"><label>대회명</label><input type="text" id="ck-title"></div>
                 <div class="box"><label>결과</label><select id="ck-result"><option value="승">WIN</option><option value="패">LOSE</option></select></div>
                 <div class="box"><label>스코어</label><input type="text" id="ck-score" placeholder="3:2"></div>
+                <div class="box"><label>본인 포지션</label><select id="ck-pos"><option value="TOP">TOP</option><option value="JGL">JGL</option><option value="MID">MID</option><option value="AD">AD</option><option value="SUP">SUP</option></select></div>
                 <div class="box"><label>상대 BJ</label><input type="text" id="ck-opp"></div>
                 <div class="box"><label>펀딩 총액</label><input type="number" id="ck-fund"></div>
-                <div class="box full"><label>라인업 (상대vs우리, 상대vs우리...)</label><input type="text" id="ck-mem"></div>
-                <div class="box full"><label>메모</label><input type="text" id="ck-memo"></div>
+                <div class="box" style="grid-column: span 2;"><label>라인업 (상대vs우리, 상대vs우리...)</label><input type="text" id="ck-mem"></div>
+                <div class="box" style="grid-column: span 2;"><label>메모</label><input type="text" id="ck-memo"></div>
             </div>
-
             <div id="solo-fields" class="grid" style="display:none;">
                 <div class="box"><label>날짜</label><input type="date" id="solo-date"></div>
                 <div class="box"><label>솔랭내기 명칭</label><input type="text" id="solo-title"></div>
                 <div class="box"><label>결과</label><select id="solo-result"><option value="승">WIN</option><option value="패">LOSE</option></select></div>
                 <div class="box"><label>스코어</label><input type="text" id="solo-score"></div>
-                <div class="box full"><label>사용 계정 (임팡벌레#바텀박사)</label><input type="text" id="solo-acc"></div>
-                <div class="box"><label>참여 인원</label><input type="number" id="solo-play"></div>
+                <div class="box" style="grid-column: span 2;"><label>계정 (임팡벌레#바텀박사)</label><input type="text" id="solo-acc"></div>
+                <div class="box"><label>참여 인원</label><input type="number" id="solo-play" value="1"></div>
                 <div class="box"><label>펀딩 총액</label><input type="number" id="solo-fund"></div>
-                <div class="box full"><label>라인업 (상대vs우리...)</label><input type="text" id="solo-mem"></div>
-                <div class="box full"><label>메모</label><input type="text" id="solo-memo"></div>
+                <div class="box" style="grid-column: span 2;"><label>라인업 (상대vs우리...)</label><input type="text" id="solo-mem"></div>
+                <div class="box" style="grid-column: span 2;"><label>메모</label><input type="text" id="solo-memo"></div>
             </div>
-
             <button type="submit" id="submit-btn" class="submit-btn">데이터 저장하기</button>
             <button type="button" id="cancel-btn" class="submit-btn" style="background:#aaa; display:none;" onclick="location.reload()">수정 취소</button>
         </form>
     </div>
-
     <div class="card">
-        <h3 style="margin-bottom:15px; color:var(--sub);">관리 리스트</h3>
-        <div style="overflow-x:auto;">
-            <table class="table">
-                <thead><tr><th>날짜</th><th>내용</th><th>결과</th><th>관리</th></tr></thead>
-                <tbody id="manage-list"></tbody>
-            </table>
-        </div>
+        <h3>관리 리스트</h3>
+        <table class="table">
+            <thead><tr><th>날짜</th><th>내용</th><th>결과</th><th>관리</th></tr></thead>
+            <tbody id="manage-list"></tbody>
+        </table>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     const SUPABASE_URL = 'https://ilwpkjdwizzjmcmfmvig.supabase.co';
@@ -128,7 +86,7 @@
     function switchTab(t) {
         mode = t;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(t + '-tab').classList.add('active');
+        document.getElementById(t+'-tab').classList.add('active');
         document.getElementById('ck-fields').style.display = t === 'ck' ? 'grid' : 'none';
         document.getElementById('solo-fields').style.display = t === 'solo' ? 'grid' : 'none';
         fetchList();
@@ -137,12 +95,11 @@
     async function fetchList() {
         const table = mode === 'ck' ? 'records' : 'solo_records';
         const { data } = await _supabase.from(table).select('*').order('date', { ascending: false });
-        const list = document.getElementById('manage-list');
-        list.innerHTML = '';
+        const list = document.getElementById('manage-list'); list.innerHTML = '';
         data?.forEach(item => {
             list.innerHTML += `<tr><td>${item.date}</td><td>${item.title}</td><td>${item.result}</td><td>
-                <button class="action-btn edit-btn" onclick="editMode('${item.id}')">수정</button>
-                <button class="action-btn del-btn" onclick="delData('${item.id}')">삭제</button>
+                <button class="action-btn edit" onclick="editMode('${item.id}')">수정</button>
+                <button class="action-btn del" onclick="delData('${item.id}')">삭제</button>
             </td></tr>`;
         });
     }
@@ -152,69 +109,45 @@
         const { data } = await _supabase.from(table).select('*').eq('id', id).single();
         document.getElementById('edit-id').value = id;
         if(mode === 'ck') {
-            document.getElementById('ck-date').value = data.date;
-            document.getElementById('ck-title').value = data.title;
-            document.getElementById('ck-result').value = data.result;
-            document.getElementById('ck-score').value = data.score;
-            document.getElementById('ck-opp').value = data.opponent;
-            document.getElementById('ck-fund').value = data.funding;
-            document.getElementById('ck-mem').value = data.members;
-            document.getElementById('ck-memo').value = data.memo;
+            document.getElementById('ck-date').value = data.date; document.getElementById('ck-title').value = data.title;
+            document.getElementById('ck-result').value = data.result; document.getElementById('ck-score').value = data.score;
+            document.getElementById('ck-pos').value = data.position || 'AD'; document.getElementById('ck-opp').value = data.opponent;
+            document.getElementById('ck-fund').value = data.funding; document.getElementById('ck-mem').value = data.members; document.getElementById('ck-memo').value = data.memo;
         } else {
-            document.getElementById('solo-date').value = data.date;
-            document.getElementById('solo-title').value = data.title;
-            document.getElementById('solo-result').value = data.result;
-            document.getElementById('solo-score').value = data.score;
-            document.getElementById('solo-acc').value = data.account;
-            document.getElementById('solo-play').value = data.players;
-            document.getElementById('solo-fund').value = data.funding;
-            document.getElementById('solo-mem').value = data.members;
-            document.getElementById('solo-memo').value = data.memo;
+            document.getElementById('solo-date').value = data.date; document.getElementById('solo-title').value = data.title;
+            document.getElementById('solo-result').value = data.result; document.getElementById('solo-score').value = data.score;
+            document.getElementById('solo-acc').value = data.account; document.getElementById('solo-play').value = data.players;
+            document.getElementById('solo-fund').value = data.funding; document.getElementById('solo-mem').value = data.members; document.getElementById('solo-memo').value = data.memo;
         }
-        document.getElementById('form-title').innerText = "수정 모드 활성";
-        document.getElementById('submit-btn').innerText = "수정 완료";
-        document.getElementById('cancel-btn').style.display = "block";
-        window.scrollTo(0,0);
+        document.getElementById('form-title').innerText = "수정 모드"; document.getElementById('submit-btn').innerText = "수정 완료";
+        document.getElementById('cancel-btn').style.display = "block"; window.scrollTo(0,0);
     }
 
     async function delData(id) {
-        if(confirm("이 기록을 삭제할까요?")) {
+        if(confirm("삭제할까요?")) {
             const table = mode === 'ck' ? 'records' : 'solo_records';
-            await _supabase.from(table).delete().eq('id', id);
-            fetchList();
+            await _supabase.from(table).delete().eq('id', id); fetchList();
         }
     }
 
     document.getElementById('main-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('edit-id').value;
+        e.preventDefault(); const id = document.getElementById('edit-id').value;
         const table = mode === 'ck' ? 'records' : 'solo_records';
         const payload = mode === 'ck' ? {
-            date: document.getElementById('ck-date').value,
-            title: document.getElementById('ck-title').value,
-            result: document.getElementById('ck-result').value,
-            score: document.getElementById('ck-score').value,
-            opponent: document.getElementById('ck-opp').value,
-            funding: parseInt(document.getElementById('ck-fund').value) || 0,
-            members: document.getElementById('ck-mem').value,
-            memo: document.getElementById('ck-memo').value
+            date: document.getElementById('ck-date').value, title: document.getElementById('ck-title').value,
+            result: document.getElementById('ck-result').value, score: document.getElementById('ck-score').value,
+            position: document.getElementById('ck-pos').value, opponent: document.getElementById('ck-opp').value,
+            funding: parseInt(document.getElementById('ck-fund').value) || 0, members: document.getElementById('ck-mem').value, memo: document.getElementById('ck-memo').value
         } : {
-            date: document.getElementById('solo-date').value,
-            title: document.getElementById('solo-title').value,
-            result: document.getElementById('solo-result').value,
-            score: document.getElementById('solo-score').value,
-            account: document.getElementById('solo-acc').value,
-            players: parseInt(document.getElementById('solo-play').value) || 1,
-            funding: parseInt(document.getElementById('solo-fund').value) || 0,
-            members: document.getElementById('solo-mem').value,
-            memo: document.getElementById('solo-memo').value
+            date: document.getElementById('solo-date').value, title: document.getElementById('solo-title').value,
+            result: document.getElementById('solo-result').value, score: document.getElementById('solo-score').value,
+            account: document.getElementById('solo-acc').value, players: parseInt(document.getElementById('solo-play').value) || 1,
+            funding: parseInt(document.getElementById('solo-fund').value) || 0, members: document.getElementById('solo-mem').value, memo: document.getElementById('solo-memo').value
         };
         if(id) await _supabase.from(table).update(payload).eq('id', id);
         else await _supabase.from(table).insert([payload]);
-        alert("저장 성공!");
-        location.reload();
+        alert("저장 완료!"); location.reload();
     });
-
     window.onload = fetchList;
 </script>
 </body>
