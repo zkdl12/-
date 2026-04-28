@@ -2,115 +2,173 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANI.LAB - 전적 관리</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANI.LAB - 전적 관리자</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
-        :root { --bg: #fff0f3; --card: #ffffff; --accent: #ff007f; --text: #333; }
-        body { background: var(--bg); color: var(--text); padding: 40px 20px; font-family: 'Pretendard', sans-serif; }
-        .wrapper { max-width: 900px; margin: 0 auto; }
-        .card { background: var(--card); padding: 40px; border-radius: 30px; border: 3px solid #ffe4e9; box-shadow: 0 20px 60px rgba(255,0,127,0.1); margin-bottom: 40px; }
+        :root { --bg: #fff0f3; --accent: #ff007f; --sub: #ff85a1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
+        body { background: var(--bg); padding: 20px; color: #333; }
+        
+        .admin-wrapper { max-width: 900px; margin: 0 auto; }
+
+        /* 🚀 상단 네비게이션 버튼 */
+        .nav-bar { 
+            display: flex; gap: 10px; margin-bottom: 20px; justify-content: flex-end; 
+        }
+        .nav-btn { 
+            text-decoration: none; padding: 10px 18px; border-radius: 10px; 
+            font-size: 0.85rem; font-weight: 800; transition: 0.3s;
+            background: #fff; color: var(--sub); border: 2px solid #ffe4e9;
+        }
+        .nav-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        .card { 
+            background: #fff; padding: 40px; border-radius: 30px; 
+            border: 3px solid #ffe4e9; box-shadow: 0 20px 40px rgba(255,0,127,0.05); 
+            margin-bottom: 30px; 
+        }
+        
         h2 { font-size: 1.8rem; font-weight: 900; color: var(--accent); margin-bottom: 30px; border-left: 8px solid var(--accent); padding-left: 20px; }
+        
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .box { display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 0.8rem; font-weight: 800; color: #ff85a1; }
-        input, select { background: #fff9fa; border: 2px solid #ffe4e9; border-radius: 12px; padding: 14px; font-size: 1rem; outline: none; }
-        input:focus { border-color: var(--accent); }
-        .btn { grid-column: span 2; padding: 20px; background: var(--accent); border: none; border-radius: 15px; color: #fff; font-size: 1.2rem; font-weight: 900; cursor: pointer; transition: 0.3s; }
-        .btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
-        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .table th, .table td { padding: 15px; border-bottom: 1px solid var(--bg); text-align: left; }
-        .btn-s { padding: 6px 12px; border-radius: 6px; border: none; font-size: 0.75rem; cursor: pointer; font-weight: 800; }
+        .full { grid-column: span 2; }
+        
+        label { font-size: 0.85rem; font-weight: 800; color: var(--sub); }
+        input, select { padding: 15px; border: 2px solid #ffe4e9; border-radius: 12px; outline: none; background: #fff9fa; font-size: 1rem; }
+        input:focus { border-color: var(--accent); background: #fff; }
+        
+        .btn-submit { width: 100%; padding: 20px; background: var(--accent); color: #fff; border: none; border-radius: 15px; font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-top: 10px; transition: 0.3s; box-shadow: 0 10px 20px rgba(255,0,127,0.2); }
+        .btn-submit:hover { transform: translateY(-3px); filter: brightness(1.05); }
+
+        .table-wrapper { overflow-x: auto; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .table th { text-align: left; padding: 15px; color: var(--sub); font-size: 0.8rem; border-bottom: 2px solid var(--bg); }
+        .table td { padding: 15px; border-bottom: 1px solid var(--bg); font-size: 0.9rem; }
+        
+        .action-btn { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 800; font-size: 0.75rem; }
+        .edit { background: #eee; color: #666; margin-right: 5px; }
+        .del { background: #ffebeb; color: #ff4d4d; }
+
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .full { grid-column: span 1; } }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <div class="card">
-            <h2 id="title-text">전적 데이터 입력</h2>
-            <form id="form">
-                <input type="hidden" id="edit-id">
-                <div class="grid">
-                    <div class="box"><label>날짜</label><input type="date" id="date" required></div>
-                    <div class="box"><label>대회명</label><input type="text" id="title" required></div>
-                    <div class="box"><label>결과</label><select id="result"><option value="승">WIN</option><option value="패">LOSE</option></select></div>
-                    <div class="box"><label>스코어</label><input type="text" id="score" placeholder="3:2"></div>
-                    <div class="box"><label>상대</label><input type="text" id="opponent"></div>
-                    <div class="box"><label>포지션</label><select id="pos"><option value="MID">MID</option><option value="AD">AD</option><option value="TOP">TOP</option><option value="JGL">JGL</option><option value="SUP">SUP</option></select></div>
-                    <div class="box"><label>펀딩 총액</label><input type="number" id="funding"></div>
-                    <div class="box" style="grid-column: span 2;"><label>특이사항 (메모)</label><input type="text" id="memo"></div>
-                    <button type="submit" id="sub-btn" class="btn">데이터 저장하기</button>
-                </div>
-            </form>
-        </div>
 
-        <div class="card">
-            <h2>리스트 관리</h2>
+<div class="admin-wrapper">
+    <div class="nav-bar">
+        <a href="index.html" class="nav-btn">메인 화면으로</a>
+        <a href="record.html" class="nav-btn">전적 데이터 확인</a>
+    </div>
+
+    <div class="card">
+        <h2 id="form-title">데이터 입력</h2>
+        <form id="recordForm">
+            <input type="hidden" id="edit-id">
+            <div class="grid">
+                <div class="box"><label>날짜</label><input type="date" id="date" required></div>
+                <div class="box"><label>대회명</label><input type="text" id="title" placeholder="멸망전, CK 등" required></div>
+                <div class="box"><label>결과</label><select id="result"><option value="승">WIN</option><option value="패">LOSE</option></select></div>
+                <div class="box"><label>세트 스코어</label><input type="text" id="score" placeholder="3:2"></div>
+                <div class="box"><label>맞라인 상대</label><input type="text" id="opponent" placeholder="상대 BJ 닉네임"></div>
+                <div class="box"><label>펀딩 총액</label><input type="number" id="funding" placeholder="숫자만 입력"></div>
+                
+                <div class="box full">
+                    <label>라인업 (입력예시: 상대vs우리, 상대vs우리)</label>
+                    <input type="text" id="members" placeholder="포지션별 vs와 쉼표 구분">
+                </div>
+                
+                <div class="box full"><label>특이사항 (메모)</label><input type="text" id="memo" placeholder="전적 페이지에 표시될 메모"></div>
+            </div>
+            <button type="submit" id="submitBtn" class="btn-submit">데이터 저장하기</button>
+            <button type="button" id="cancelBtn" style="display:none; background:#aaa; margin-top:10px;" class="btn-submit">수정 취소</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>최근 기록 관리</h2>
+        <div class="table-wrapper">
             <table class="table">
-                <thead><tr><th>날짜</th><th>대회</th><th>결과</th><th>관리</th></tr></thead>
+                <thead><tr><th>날짜</th><th>대회명</th><th>결과</th><th>관리</th></tr></thead>
                 <tbody id="list"></tbody>
             </table>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const SUPABASE_URL = 'https://ilwpkjdwizzjmcmfmvig.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_2IN7qgG_rvB6kcggisbmxA_XqInFAgy';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = 'https://ilwpkjdwizzjmcmfmvig.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_2IN7qgG_rvB6kcggisbmxA_XqInFAgy';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function fetchAll() {
-            const { data } = await _supabase.from('records').select('*').order('date', { ascending: false });
-            const tbody = document.getElementById('list');
-            tbody.innerHTML = '';
-            data?.forEach(item => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.date}</td>
-                        <td><b>${item.title}</b></td>
-                        <td style="color:${item.result.includes('승')?'#00d084':'#ff4d4d'}">${item.result}</td>
-                        <td>
-                            <button class="btn-s" onclick="editMode('${item.id}','${item.date}','${item.title}','${item.result}','${item.score}','${item.opponent}','${item.position}','${item.funding}','${item.memo}')">수정</button>
-                            <button class="btn-s" style="color:red" onclick="del('${item.id}')">삭제</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        document.getElementById('form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-id').value;
-            const payload = {
-                date: document.getElementById('date').value,
-                title: document.getElementById('title').value,
-                result: document.getElementById('result').value,
-                score: document.getElementById('score').value,
-                opponent: document.getElementById('opponent').value,
-                position: document.getElementById('pos').value,
-                funding: parseInt(document.getElementById('funding').value) || 0,
-                memo: document.getElementById('memo').value
-            };
-            if(id) await _supabase.from('records').update(payload).eq('id', id);
-            else await _supabase.from('records').insert([payload]);
-            location.reload();
+    async function fetchRecords() {
+        const { data } = await _supabase.from('records').select('*').order('date', { ascending: false });
+        const tbody = document.getElementById('list');
+        tbody.innerHTML = '';
+        data?.forEach(item => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.date}</td>
+                    <td><b>${item.title}</b></td>
+                    <td style="color:${item.result==='승'?'#00d084':'#ff4d4d'}">${item.result}</td>
+                    <td>
+                        <button class="action-btn edit" onclick="editMode('${item.id}','${item.date}','${item.title}','${item.result}','${item.score}','${item.opponent}','${item.funding}','${item.members}','${item.memo}')">수정</button>
+                        <button class="action-btn del" onclick="delRecord('${item.id}')">삭제</button>
+                    </td>
+                </tr>`;
         });
+    }
 
-        window.editMode = (id, d, t, r, s, o, p, f, m) => {
-            document.getElementById('edit-id').value = id;
-            document.getElementById('date').value = d;
-            document.getElementById('title').value = t;
-            document.getElementById('result').value = r.includes('승') ? '승' : '패';
-            document.getElementById('score').value = s === 'null' ? '' : s;
-            document.getElementById('opponent').value = o;
-            document.getElementById('pos').value = p;
-            document.getElementById('funding').value = f;
-            document.getElementById('memo').value = m === 'null' ? '' : m;
-            document.getElementById('title-text').innerText = "데이터 수정 중...";
-            document.getElementById('sub-btn').innerText = "수정 완료하기";
-            window.scrollTo(0,0);
+    document.getElementById('recordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit-id').value;
+        const payload = {
+            date: document.getElementById('date').value,
+            title: document.getElementById('title').value,
+            result: document.getElementById('result').value,
+            score: document.getElementById('score').value,
+            opponent: document.getElementById('opponent').value,
+            funding: parseInt(document.getElementById('funding').value) || 0,
+            members: document.getElementById('members').value,
+            memo: document.getElementById('memo').value
         };
 
-        window.del = async (id) => { if(confirm("삭제?")) { await _supabase.from('records').delete().eq('id', id); fetchAll(); } };
-        window.onload = fetchAll;
-    </script>
+        if(id) await _supabase.from('records').update(payload).eq('id', id);
+        else await _supabase.from('records').insert([payload]);
+        
+        alert("성공적으로 저장되었습니다!");
+        location.reload();
+    });
+
+    window.editMode = (id, d, t, r, s, o, f, m, memo) => {
+        document.getElementById('edit-id').value = id;
+        document.getElementById('date').value = d;
+        document.getElementById('title').value = t;
+        document.getElementById('result').value = r;
+        document.getElementById('score').value = s === 'null' ? '' : s;
+        document.getElementById('opponent').value = o;
+        document.getElementById('funding').value = f;
+        document.getElementById('members').value = m === 'null' ? '' : m;
+        document.getElementById('memo').value = memo === 'null' ? '' : memo;
+        
+        document.getElementById('form-title').innerText = "데이터 수정 중...";
+        document.getElementById('submitBtn').innerText = "수정 완료하기";
+        document.getElementById('cancelBtn').style.display = "block";
+        window.scrollTo(0,0);
+    }
+
+    window.delRecord = async (id) => {
+        if(confirm("진짜 삭제할 거임? 복구 안 됨.")) {
+            await _supabase.from('records').delete().eq('id', id);
+            fetchRecords();
+        }
+    }
+
+    document.getElementById('cancelBtn').addEventListener('click', () => { location.reload(); });
+
+    window.onload = fetchRecords;
+</script>
 </body>
 </html>
