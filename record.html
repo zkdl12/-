@@ -116,7 +116,7 @@
             list.innerHTML = '<tr><td colspan="5">데이터 로딩 중...</td></tr>';
 
             if(currentType === 'ck') {
-                head.innerHTML = `<tr><th width="15%">날짜</th><th width="15%">결과</th><th width="25%">대회정보</th><th width="15%">상대</th><th width="30%">펀딩(인당)</th></tr>`;
+                head.innerHTML = `<tr><th width="15%">날짜</th><th width="15%">결과</th><th width="25%">CK명</th><th width="15%">상대</th><th width="30%">펀딩(인당)</th></tr>`;
                 const { data } = await _supabase.from('records').select('*').order('date', { ascending: false });
                 allCKData = data || [];
                 renderTable(data, true);
