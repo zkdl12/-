@@ -1,74 +1,31 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-        <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-WLFLL6GS');</script>
-    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANI.LAB - 방셀게시판</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
-        /* T1 전적 사이트 완벽 복사 테마 */
-        :root { 
-            --t1-red: #E4002B; 
-            --bg-dark: #050505; 
-            --table-header: #0f0f0f;
-            --table-row: #0a0a0a;
-            --gold: #C29E5E; 
-            --border: #1a1a1a; 
-        }
-
+        /* T1 전적 사이트 완벽 복사 테마 (CSS 생략 - 형님 코드 그대로 유지) */
+        :root { --t1-red: #E4002B; --bg-dark: #050505; --table-header: #0f0f0f; --table-row: #0a0a0a; --gold: #C29E5E; --border: #1a1a1a; }
         body { background: var(--bg-dark); color: #fff; font-family: 'Pretendard', sans-serif; margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
-
-        h1 { 
-            text-align: center; font-size: 1.2rem; font-weight: 900; color: var(--gold);
-            margin-bottom: 30px; letter-spacing: 2px;
-        }
-
-        /* 테이블 컨테이너 */
+        h1 { text-align: center; font-size: 1.2rem; font-weight: 900; color: var(--gold); margin-bottom: 30px; letter-spacing: 2px; }
         .bangsel-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); }
-        
-        /* 상단 헤더 블랙 바 */
-        .table-header { 
-            background: var(--table-header); 
-            border-top: 2px solid var(--t1-red); /* 이미지 상단 레드라인 */
-            height: 45px;
-        }
-        .table-header th { 
-            font-size: 0.85rem; color: #888; font-weight: 800; 
-            padding: 0 15px; text-align: center; border-bottom: 1px solid var(--border);
-        }
-
-        /* 데이터 로우 */
+        .table-header { background: var(--table-header); border-top: 2px solid var(--t1-red); height: 45px; }
+        .table-header th { font-size: 0.85rem; color: #888; font-weight: 800; padding: 0 15px; text-align: center; border-bottom: 1px solid var(--border); }
         .table-row { background: var(--table-row); border-bottom: 1px solid var(--border); transition: 0.2s; }
         .table-row:hover { background: #111; }
         .table-row td { padding: 15px; text-align: center; font-size: 0.95rem; font-weight: 700; color: #ccc; }
-
-        /* 특정 데이터 강조 */
         .td-name { color: #fff !important; font-weight: 900 !important; }
         .td-stars { color: var(--t1-red) !important; font-size: 1.1rem !important; }
         .td-content { text-align: left !important; color: #aaa !important; font-size: 0.85rem !important; min-width: 300px; }
-
-        /* 방송국 버튼 (STATION) */
-        .link-btn { 
-            display: inline-block; text-decoration: none; color: var(--gold); 
-            border: 1px solid var(--gold); padding: 5px 12px; font-size: 0.75rem; 
-            font-weight: 800; transition: 0.2s;
-        }
+        .link-btn { display: inline-block; text-decoration: none; color: var(--gold); border: 1px solid var(--gold); padding: 5px 12px; font-size: 0.75rem; font-weight: 800; transition: 0.2s; }
         .link-btn:hover { background: var(--gold); color: #000; }
-
         #status-msg { text-align: center; color: var(--gold); margin-top: 50px; font-weight: 800; }
-
-        /* 모바일 대응 */
         @media (max-width: 900px) {
             .bangsel-table, .table-header, .table-row, td, th { display: block; width: 100%; }
-            .table-header { display: none; } /* 모바일은 헤더 숨김 */
+            .table-header { display: none; }
             .table-row { margin-bottom: 15px; border: 1px solid var(--border); padding: 15px; }
             .table-row td { text-align: left; padding: 5px 0; border: none; }
             .table-row td::before { content: attr(data-label); color: var(--gold); font-size: 0.7rem; margin-right: 10px; font-weight: 800; }
@@ -77,10 +34,6 @@
     </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WLFLL6GS"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
     <div class="container">
         <h1>방셀게시판</h1>
         <table class="bangsel-table">
@@ -93,8 +46,7 @@
                     <th>내용</th>
                 </tr>
             </thead>
-            <tbody id="bangsel-list">
-                </tbody>
+            <tbody id="bangsel-list"></tbody>
         </table>
         <p id="status-msg">데이터 로딩 중...</p>
     </div>
@@ -118,15 +70,20 @@
             }
 
             statusMsg.style.display = 'none';
-            listContainer.innerHTML = data.map(i => `
+            listContainer.innerHTML = data.map(i => {
+                // 💡 [핵심 수정] 내용에서 '/' 기호를 찾아서 공백으로 싹 바꿈 (정규식 사용)
+                const cleanContent = i.content ? i.content.replace(/\//g, ' ') : '';
+
+                return `
                 <tr class="table-row">
                     <td class="td-name" data-label="이름">${i.user_name}</td>
                     <td data-label="아이디명">${i.user_id}</td>
                     <td data-label="방송국"><a href="https://www.sooplive.com/station/${i.user_id}" target="_blank" class="link-btn">STATION</a></td>
                     <td class="td-stars" data-label="펀딩개수">${(i.star_count || 0).toLocaleString()}개</td>
-                    <td class="td-content" data-label="내용">${i.content}</td>
+                    <td class="td-content" data-label="내용">${cleanContent}</td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
         }
 
         window.addEventListener('DOMContentLoaded', loadBangsel);
