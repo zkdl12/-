@@ -96,10 +96,13 @@
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         const size = 100;
         let cell = 6;
+        
+        // 추가된 수술용 변수들
         let grid = [], mask = [], teams = [], running = false, totalMaskPixels = 0;
         let animationId = null;
-        let overtimeFrame = 0;
+        let overtimeTicks = 0; // 배속에 영향 받지 않는 절대 틱(Tick) 카운트
         let currentSpeed = 1.0; 
+        let lastUiUpdate = 0; // DOM 렌더링 렉 방지용 타이머
 
         const shapes = ['🐘', '🐈', '🐕', '🐇', '🦋', '🥒', '🦁', '🦉', '🐢', '🐬', '🐙', '🐴', '🐊', '🐯'];
         canvas.width = canvas.height = size * cell;
@@ -115,7 +118,7 @@
             if(!input) return alert("참가자 명단을 입력해 주세요.");
             
             running = false;
-            overtimeFrame = 0;
+            overtimeTicks = 0;
             if(animationId) cancelAnimationFrame(animationId);
             document.getElementById('result-modal').style.display = 'none';
 
@@ -145,7 +148,6 @@
             
             grid = Array(size).fill().map(() => Array(size).fill(-1));
             
-            // 초기 거점 하나씩 부여
             teams.forEach((_, idx) => {
                 let found = false;
                 while (!found) {
@@ -155,13 +157,51 @@
             });
             
             running = true;
-            loop();
+            loop(performance.now());
         }
 
-        function loop() {
+        // 1. 논리 연산과 렌더링을 분리한 핵심 함수
+        function updateLogic(attempts) {
+            const counts = Array(teams.length).fill(0);
+            let occupied = 0;
+            grid.forEach(row => row.forEach(val => { if(val !== -1) { counts[val]++; occupied++; } }));
+            
+            teams.forEach((t, i) => { 
+                t.score = counts[i]; 
+                t.share = t.score / totalMaskPixels; 
+            });
+            
+            let aliveTeams = teams.filter(t => t.score > 0).sort((a,b) => b.score - a.score);
+            aliveTeams.forEach((t, idx) => {
+                const teamRef = teams.find(team => team.name === t.name);
+                if (teamRef) {
+                    teamRef.currentRank = idx;
+                    teamRef.aliveCount = aliveTeams.length;
+                }
+            });
+
+            const sorted = [...teams].sort((a,b) => b.score - a.score);
+
+            // 2. 연장전 판별 로직을 프레임에서 '절대 연산 횟수(Tick)'로 변경 (배속 상관없이 공평)
+            if (occupied >= totalMaskPixels && running) {
+                overtimeTicks += attempts;
+                // 30,000틱 진행 (1.0배속 기준 약 3.3초) 후 종료
+                if (sorted[0].share >= 0.6 || overtimeTicks > 30000) {
+                    running = false;
+                    showFinal(sorted);
+                }
+            } else {
+                overtimeTicks = 0;
+            }
+
+            return sorted;
+        }
+
+        function loop(timestamp) {
             if (!running) return;
 
-            const baseAttempts = 500; 
+            // 배속 체감을 확실히 느끼도록 기본 연산량을 500 -> 150으로 낮춤
+            const baseAttempts = 150; 
             const attemptsPerFrame = Math.floor(baseAttempts * currentSpeed); 
 
             for (let i = 0; i < attemptsPerFrame; i++) {
@@ -174,23 +214,13 @@
                 const attacker = teams[attackerIdx];
                 const aliveCount = attacker.aliveCount || 1;
                 
-                // [등수 기반 계수 산출]
-                // 1등은 0.0, 꼴찌는 1.0 (팀이 4개면 1등:0.0, 2등:0.33, 3등:0.66, 4등:1.0)
                 const rankRatio = aliveCount > 1 ? (attacker.currentRank / (aliveCount - 1)) : 0;
-
-                // [1. 행동력(턴) 보정]
-                // 1등은 10% 확률로만 행동 (거의 멈춤), 꼴찌는 100% 확률로 행동 (폭주)
                 let actionChance = 0.10 + (0.90 * rankRatio);
                 
-                // 단, 아직 맵이 많이 비어있는 초반(누구든 10% 미만 점유)엔 빠르게 채우게 함
                 if (attacker.share < 0.1) actionChance = Math.max(actionChance, 0.8);
-
                 if (Math.random() > actionChance) continue;
 
-                // [2. 사거리 보정 (점프력)]
-                // 1등은 1칸, 꼴찌는 최대 5칸까지 날아가서 꽂음
                 let maxRange = 1 + Math.floor(4 * rankRatio); 
-
                 const dist = Math.floor(Math.random() * maxRange) + 1;
                 const dir = [[0,1],[0,-1],[1,0],[-1,0]];
                 const [dx, dy] = dir[Math.floor(Math.random()*4)];
@@ -207,13 +237,7 @@
                         if (targetIdx !== -1) {
                             const target = teams[targetIdx];
                             const targetRankRatio = aliveCount > 1 ? (target.currentRank / (aliveCount - 1)) : 0;
-                            
-                            // [3. 공격/방어 확률 공식]
-                            // 내 등수가 낮을수록(꼴찌일수록) 공격력 상승
-                            // 상대 등수가 높을수록(1등일수록) 방어력 감소
                             captureChance = 0.3 + (rankRatio * 0.4) + ((1.0 - targetRankRatio) * 0.3);
-                            
-                            // 찐 꼴찌가 1등을 때릴 때는 무조건 100% 관통
                             if (attacker.currentRank === aliveCount - 1 && target.currentRank === 0) {
                                 captureChance = 1.0;
                             }
@@ -222,20 +246,13 @@
                         if (Math.random() < captureChance) {
                             grid[nx][ny] = attackerIdx;
 
-                            // [4. 폭발적 스플래시 데미지 (카오스의 핵심)]
-                            // 하위권(rankRatio 0.5 이상)이 공격 성공 시 확률적으로 십자/광역 폭발
                             if (rankRatio > 0.5 && Math.random() < (0.1 + 0.3 * rankRatio)) {
-                                // 꼴찌일수록 더 넓은 범위(2칸 반경) 폭발
                                 const splashSize = Math.random() < rankRatio ? 2 : 1; 
-                                
                                 for(let sx = -splashSize; sx <= splashSize; sx++) {
                                     for(let sy = -splashSize; sy <= splashSize; sy++) {
-                                        // 십자 모양을 넘어서 사각형 범위로 무작위 감염
                                         if(Math.abs(sx) + Math.abs(sy) > splashSize + 1) continue; 
-                                        
                                         const tx = nx + sx, ty = ny + sy;
                                         if (tx >= 0 && tx < size && ty >= 0 && ty < size && mask[tx][ty] === 1) {
-                                            // 70% 확률로 빈틈없이 파고듦
                                             if (Math.random() < 0.7) grid[tx][ty] = attackerIdx;
                                         }
                                     }
@@ -245,9 +262,21 @@
                     }
                 }
             }
+            
             draw();
-            updateLiveStatus();
-            animationId = requestAnimationFrame(loop);
+
+            // 순위 및 점유율 계산 (매 프레임)
+            const sorted = updateLogic(attemptsPerFrame);
+
+            // 3. 브라우저 과부하 방지: HTML DOM 쓰기 작업을 100ms(0.1초)에 1번만 실행
+            if (!lastUiUpdate || timestamp - lastUiUpdate > 100) {
+                renderLiveStatus(sorted);
+                lastUiUpdate = timestamp;
+            }
+
+            if (running) {
+                animationId = requestAnimationFrame(loop);
+            }
         }
 
         function draw() {
@@ -262,31 +291,8 @@
             }
         }
 
-        function updateLiveStatus() {
-            const counts = Array(teams.length).fill(0);
-            let occupied = 0;
-            grid.forEach(row => row.forEach(val => { if(val !== -1) { counts[val]++; occupied++; } }));
-            
-            teams.forEach((t, i) => { 
-                t.score = counts[i]; 
-                t.share = t.score / totalMaskPixels; 
-            });
-            
-            // [매 프레임마다 실시간 등수 업데이트]
-            let aliveTeams = teams.filter(t => t.score > 0).sort((a,b) => b.score - a.score);
-            aliveTeams.forEach((t, idx) => {
-                // 원래 배열(teams)의 객체 속성을 업데이트
-                const teamRef = teams.find(team => team.name === t.name);
-                if (teamRef) {
-                    teamRef.currentRank = idx;
-                    teamRef.aliveCount = aliveTeams.length;
-                }
-            });
-
-            const sorted = [...teams].sort((a,b) => b.score - a.score);
-            
+        function renderLiveStatus(sorted) {
             document.getElementById('live-report').innerHTML = sorted.map(t => {
-                // 순위 변동을 직관적으로 보여주기 위해 1등은 글씨를 키우고 반짝이게 함
                 const isFirst = (t.currentRank === 0 && t.score > 0);
                 const nameStyle = isFirst ? 'flex:1; color:#fff; font-weight:900; text-shadow: 0 0 5px var(--gold);' : 'flex:1; color:#777;';
                 
@@ -297,21 +303,11 @@
                     <span style="font-weight:bold; color:var(--gold);">${(t.share * 100).toFixed(1)}%</span>
                 </div>
             `}).join('');
-
-            // 다 채워진 후에도 진흙탕 싸움을 위해 연장전 (배속 상관없이 약 5초 유지)
-            if (occupied >= totalMaskPixels && running) {
-                overtimeFrame++;
-                // 한 명이 60% 이상 장악하거나, 연장전 시간이 다 되면 끝
-                if (sorted[0].share >= 0.6 || overtimeFrame > (300 / currentSpeed)) {
-                    running = false;
-                    showFinal(sorted);
-                }
-            } else {
-                overtimeFrame = 0;
-            }
         }
 
         function showFinal(sorted) {
+            // 마지막 결과를 확실히 갱신
+            renderLiveStatus(sorted);
             const modal = document.getElementById('result-modal');
             const content = document.getElementById('resultContent');
             content.innerHTML = sorted.slice(0, 10).map((t, i) => `
