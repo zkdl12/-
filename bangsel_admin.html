@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+     <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WLFLL6GS');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <title>T1 ARENA - 방셀 관리자</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        :root { --t1-red: #E4002B; --t1-black: #0a0a0a; --t1-dark: #111111; --border: #222; }
+        body { background: var(--t1-black); color: #fff; font-family: 'Pretendard', sans-serif; padding: 20px; margin: 0; }
+        #admin-wrap { display: none; max-width: 500px; margin: 50px auto; }
+        .card { background: var(--t1-dark); padding: 30px; border-radius: 4px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: #fff; margin-bottom: 25px; text-align: center; font-weight: 900; border-bottom: 2px solid var(--t1-red); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .input-group { display: flex; flex-direction: column; gap: 15px; }
+        label { font-size: 0.8rem; color: var(--t1-red); font-weight: 800; margin-bottom: -10px; }
+        input, textarea { background: #000; border: 1px solid var(--border); border-radius: 4px; color: #fff; padding: 14px; font-size: 1rem; font-family: inherit; }
+        input:focus, textarea:focus { border-color: var(--t1-red); outline: none; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        button { padding: 18px; border: none; border-radius: 4px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-main { background: var(--t1-red); color: #fff; }
+        .btn-main:hover { background: #ff1a40; transform: translateY(-2px); }
+        .btn-move { background: transparent; border: 1px solid #555; color: #888; font-size: 0.8rem; padding: 12px; }
+        .btn-move:hover { border-color: #fff; color: #fff; }
+
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #000; border: 1px solid var(--border); margin-top: 10px; font-size: 0.9rem; }
+        .list-item b { color: var(--t1-red); }
+        .action-btns { display: flex; gap: 5px; }
+        .action-btns button { padding: 4px 8px; font-size: 10px; background: transparent; border: 1px solid #444; color: #888; }
+        .btn-edit:hover { border-color: #C29E5E; color: #C29E5E; }
+        .btn-del:hover { border-color: var(--t1-red); color: var(--t1-red); }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WLFLL6GS"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+<div id="admin-wrap">
+    <div class="card">
+        <h2>BANGSEL MANAGEMENT</h2>
+        
+        <div class="input-group">
+            <input type="hidden" id="edit_id" value="">
+            
+            <label>이름 (NICKNAME)</label>
+            <input type="text" id="user_name" placeholder="닉네임">
+            <label>아이디명 (SOOP ID)</label>
+            <input type="text" id="user_id" placeholder="중복 입력 시 자동 합산됨">
+            <label>펀딩개수 (BALLOONS)</label>
+            <input type="number" id="star_count" placeholder="숫자만 입력">
+            <label>내용 (CONTENT)</label>
+            <textarea id="content" rows="3" placeholder="미션 내용"></textarea>
+            
+            <div class="btn-group">
+                <button class="btn-main" onclick="saveBangsel()" id="save-btn">데이터 전송/병합</button>
+                <button class="btn-move" onclick="location.href='bangsel.html'">방셀게시판으로 이동 →</button>
+            </div>
+        </div>
+
+        <div id="list-container" style="margin-top:30px; border-top: 1px solid #222; padding-top: 20px;"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const PW = "1004";
+    const _supabase = supabase.createClient('https://ilwpkjdwizzjmcmfmvig.supabase.co', 'sb_publishable_2IN7qgG_rvB6kcggisbmxA_XqInFAgy');
+
+    async function saveBangsel() {
+        const editId = document.getElementById('edit_id').value;
+        const userName = document.getElementById('user_name').value.trim();
+        const userId = document.getElementById('user_id').value.trim();
+        const starCount = parseInt(document.getElementById('star_count').value);
+        const content = document.getElementById('content').value.trim();
+
+        if(!userId || isNaN(starCount)) return alert("아이디와 펀딩 개수는 필수입니다.");
+
+        // 1. 단순 수정 모드 (리스트에서 EDIT 눌렀을 때)
+        if (editId) {
+            const { error } = await _supabase.from('bangsel').update({
+                user_name: userName,
+                user_id: userId,
+                star_count: starCount,
+                content: content
+            }).eq('id', editId);
+            if(!error) alert("수정 완료!");
+        } 
+        else {
+            // 2. 신규/병합 모드
+            const { data: existingData } = await _supabase.from('bangsel').select('*').eq('user_id', userId).maybeSingle();
+
+            if (existingData) {
+                const { error } = await _supabase.from('bangsel').update({
+                    star_count: existingData.star_count + starCount,
+                    content: existingData.content + " / " + content,
+                    user_name: userName
+                }).eq('id', existingData.id);
+                if(!error) alert("기존 데이터에 합산 완료!");
+            } else {
+                const { error } = await _supabase.from('bangsel').insert([{ user_name: userName, user_id: userId, star_count: starCount, content: content }]);
+                if(!error) alert("신규 데이터 업로드 완료!");
+            }
+        }
+        location.reload();
+    }
+
+    // 수정 데이터 불러오기
+    function editItem(id, name, uid, stars, ct) {
+        document.getElementById('edit_id').value = id;
+        document.getElementById('user_name').value = name;
+        document.getElementById('user_id').value = uid;
+        document.getElementById('star_count').value = stars;
+        document.getElementById('content').value = ct;
+        
+        document.getElementById('save-btn').innerText = "데이터 수정 확정";
+        document.getElementById('save-btn').style.background = "#C29E5E";
+        window.scrollTo(0,0);
+    }
+
+    async function fetchList() {
+        const { data } = await _supabase.from('bangsel').select('*').order('created_at', {ascending: false});
+        document.getElementById('list-container').innerHTML = data.map(i => `
+            <div class="list-item">
+                <span><b>${i.user_name}</b> (${i.star_count}개)</span>
+                <div class="action-btns">
+                    <button class="btn-edit" onclick="editItem('${i.id}', '${i.user_name}', '${i.user_id}', ${i.star_count}, '${i.content.replace(/\n/g, ' ')}')">EDIT</button>
+                    <button class="btn-del" onclick="delItem(${i.id})">DEL</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function delItem(id) { if(confirm("삭제하시겠습니까?")) { await _supabase.from('bangsel').delete().eq('id', id); fetchList(); } }
+
+    if(localStorage.getItem("bangsel_auth") !== "ok") {
+        const input = prompt("ACCESS KEY");
+        if(input === PW) { localStorage.setItem("bangsel_auth", "ok"); location.reload(); }
+        else location.href="index.html";
+    } else { document.getElementById('admin-wrap').style.display = "block"; fetchList(); }
+</script>
+</body>
+</html>
