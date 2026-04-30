@@ -1,66 +1,59 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WLFLL6GS');</script>
+    <!-- End Google Tag Manager -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANI.LAB - 방셀게시판</title>
-
-    <!-- Google Analytics (GA4) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SK6ZXVNPCR"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-SK6ZXVNPCR');
-    </script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
         :root { --t1-red: #E4002B; --bg-dark: #050505; --table-header: #0f0f0f; --table-row: #0a0a0a; --gold: #C29E5E; --border: #1a1a1a; }
         body { background: var(--bg-dark); color: #fff; font-family: 'Pretendard', sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; font-size: 1.2rem; font-weight: 900; color: var(--gold); margin-bottom: 30px; letter-spacing: 2px; }
-        .bangsel-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); }
-        .table-header { background: var(--table-header); border-top: 2px solid var(--t1-red); height: 45px; }
-        .table-header th { font-size: 0.85rem; color: #888; font-weight: 800; padding: 0 15px; text-align: center; border-bottom: 1px solid var(--border); }
-        .table-row { background: var(--table-row); border-bottom: 1px solid var(--border); transition: 0.2s; }
-        .table-row:hover { background: #111; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 1.5rem; font-weight: 900; color: var(--gold); margin-bottom: 30px; letter-spacing: 2px; }
+
+        details { margin-bottom: 15px; border: 1px solid var(--border); background: var(--table-header); border-radius: 4px; overflow: hidden; }
+        summary { padding: 18px; cursor: pointer; font-weight: 800; color: var(--gold); list-style: none; display: flex; justify-content: space-between; align-items: center; background: #0d0d0d; }
+        summary::after { content: '▶'; font-size: 0.7rem; transition: 0.3s; color: #555; }
+        details[open] summary::after { transform: rotate(90deg); color: var(--t1-red); }
+        details[open] summary { border-bottom: 1px solid var(--border); color: #fff; }
+
+        .bangsel-table { width: 100%; border-collapse: collapse; }
+        .table-header { background: var(--table-header); height: 45px; }
+        .table-header th { font-size: 0.8rem; color: #666; font-weight: 800; padding: 0 15px; text-align: center; border-bottom: 1px solid var(--border); }
+        .table-row { background: var(--table-row); border-bottom: 1px solid var(--border); }
         .table-row td { padding: 15px; text-align: center; font-size: 0.95rem; font-weight: 700; color: #ccc; }
         .td-name { color: #fff !important; font-weight: 900 !important; }
         .td-stars { color: var(--t1-red) !important; font-size: 1.1rem !important; }
-        .td-content { text-align: left !important; color: #aaa !important; font-size: 0.85rem !important; min-width: 300px; }
-        .link-btn { display: inline-block; text-decoration: none; color: var(--gold); border: 1px solid var(--gold); padding: 5px 12px; font-size: 0.75rem; font-weight: 800; transition: 0.2s; }
-        .link-btn:hover { background: var(--gold); color: #000; }
-        #status-msg { text-align: center; color: var(--gold); margin-top: 50px; font-weight: 800; }
-        
-        /* 모바일 반응형 디자인 레이아웃 반영 */
-        @media (max-width: 900px) {
-            .bangsel-table, .table-header, .table-row, td, th { display: block; width: 100%; }
+        .td-content { text-align: left !important; color: #888 !important; font-size: 0.85rem !important; }
+        .link-btn { text-decoration: none; color: var(--gold); border: 1px solid var(--gold); padding: 5px 12px; font-size: 0.75rem; font-weight: 800; }
+
+        @media (max-width: 768px) {
             .table-header { display: none; }
-            .table-row { margin-bottom: 15px; border: 1px solid var(--border); padding: 15px; }
-            .table-row td { text-align: left; padding: 5px 0; border: none; }
-            .table-row td::before { content: attr(data-label); color: var(--gold); font-size: 0.7rem; margin-right: 10px; font-weight: 800; }
-            .td-content { border-top: 1px dotted #222 !important; margin-top: 10px; padding-top: 10px !important; }
+            .table-row { display: block; padding: 20px; border-bottom: 2px solid #1a1a1a; }
+            .table-row td { display: block; text-align: left; padding: 5px 0; border: none; }
+            .table-row td::before { content: attr(data-label); display: inline-block; width: 80px; color: var(--gold); font-size: 0.75rem; font-weight: 800; }
+            .td-content { border-top: 1px dotted #222 !important; margin-top: 10px; padding-top: 15px !important; }
         }
     </style>
 </head>
 <body>
+     <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WLFLL6GS"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
     <div class="container">
         <h1>방셀게시판</h1>
-        <table class="bangsel-table">
-            <thead class="table-header">
-                <tr>
-                    <th style="width: 150px;">이름</th>
-                    <th style="width: 150px;">아이디명</th>
-                    <th style="width: 150px;">방송국</th>
-                    <th style="width: 150px;">펀딩개수</th>
-                    <th>내용</th>
-                </tr>
-            </thead>
-            <tbody id="bangsel-list"></tbody>
-        </table>
-        <p id="status-msg">데이터 로딩 중...</p>
+        <div id="date-groups"></div>
+        <p id="status-msg" style="text-align:center; color:var(--gold); margin-top:50px; font-weight:800;">데이터 로드 중...</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -68,35 +61,49 @@
         const _supabase = supabase.createClient('https://ilwpkjdwizzjmcmfmvig.supabase.co', 'sb_publishable_2IN7qgG_rvB6kcggisbmxA_XqInFAgy');
 
         async function loadBangsel() {
-            const listContainer = document.getElementById('bangsel-list');
-            const statusMsg = document.getElementById('status-msg');
-            
+            const container = document.getElementById('date-groups');
+            // 💡 핵심 정렬: 날짜 최신순 -> 별풍선 많은 순
             const { data, error } = await _supabase
                 .from('bangsel')
                 .select('*')
+                .order('target_date', { ascending: false })
                 .order('star_count', { ascending: false });
 
             if (error || !data || data.length === 0) {
-                statusMsg.innerText = "데이터가 없습니다.";
+                document.getElementById('status-msg').innerText = "데이터가 없습니다.";
                 return;
             }
 
-            statusMsg.style.display = 'none';
-            listContainer.innerHTML = data.map(i => {
-                const cleanContent = i.content ? i.content.replace(/\//g, ' ') : '';
+            document.getElementById('status-msg').style.display = 'none';
 
+            const grouped = {};
+            data.forEach(item => {
+                if (!grouped[item.target_date]) grouped[item.target_date] = [];
+                grouped[item.target_date].push(item);
+            });
+
+            const today = new Date().toISOString().split('T')[0];
+
+            container.innerHTML = Object.keys(grouped).map(date => {
+                const isOpen = (date === today) ? 'open' : '';
                 return `
-                <tr class="table-row">
-                    <td class="td-name" data-label="이름">${i.user_name}</td>
-                    <td data-label="아이디명">${i.user_id}</td>
-                    <td data-label="방송국"><a href="https://www.sooplive.com/station/${i.user_id}" target="_blank" class="link-btn">STATION</a></td>
-                    <td class="td-stars" data-label="펀딩개수">${(i.star_count || 0).toLocaleString()}개</td>
-                    <td class="td-content" data-label="내용">${cleanContent}</td>
-                </tr>
-                `;
+                <details ${isOpen}>
+                    <summary>${date} 기록 (${grouped[date].length}건)</summary>
+                    <table class="bangsel-table">
+                        <thead class="table-header"><tr><th style="width:140px;">이름</th><th style="width:120px;">방송국</th><th style="width:130px;">펀딩개수</th><th>내용</th></tr></thead>
+                        <tbody>
+                            ${grouped[date].map(i => `
+                            <tr class="table-row">
+                                <td class="td-name" data-label="이름">${i.user_name}</td>
+                                <td data-label="방송국"><a href="https://www.sooplive.com/station/${i.user_id}" target="_blank" class="link-btn">STATION</a></td>
+                                <td class="td-stars" data-label="펀딩개수">${(i.star_count || 0).toLocaleString()}개</td>
+                                <td class="td-content" data-label="내용">${i.content ? i.content.replace(/\//g, ' ') : ''}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </details>`;
             }).join('');
         }
-
         window.addEventListener('DOMContentLoaded', loadBangsel);
     </script>
 </body>
