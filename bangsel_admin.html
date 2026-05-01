@@ -7,154 +7,162 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
         :root { --t1-red: #E4002B; --t1-black: #0a0a0a; --t1-dark: #111111; --border: #222; --gold: #C29E5E; }
-        body { background: var(--t1-black); color: #fff; font-family: 'Pretendard', sans-serif; padding: 20px; }
+        body { background: var(--t1-black); color: #fff; font-family: 'Pretendard', sans-serif; padding: 20px; margin: 0; }
+        
+        /* 🔒 로그인 섹션 */
+        #auth-wrap { height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: var(--t1-dark); padding: 40px; border: 1px solid var(--border); border-radius: 4px; width: 320px; text-align: center; }
+        .login-box h2 { color: var(--gold); font-weight: 900; margin-bottom: 30px; border-bottom: 2px solid var(--t1-red); padding-bottom: 10px; }
+
+        /* 🛠 관리 섹션 (초기 숨김) */
         #admin-wrap { max-width: 500px; margin: 20px auto; display: none; }
         .card { background: var(--t1-dark); padding: 25px; border: 1px solid var(--border); border-radius: 4px; }
         h2 { color: var(--gold); text-align: center; font-weight: 900; border-bottom: 2px solid var(--t1-red); padding-bottom: 15px; margin-bottom: 25px; }
+        
         .input-group { display: flex; flex-direction: column; gap: 12px; }
         label { font-size: 0.75rem; color: var(--t1-red); font-weight: 800; margin-bottom: -8px; }
         input, textarea { background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; font-size: 1rem; border-radius: 4px; outline: none; }
         input:focus { border-color: var(--t1-red); }
-        .btn-main { background: var(--t1-red); color: #fff; padding: 18px; border: none; font-weight: 900; cursor: pointer; margin-top: 15px; width: 100%; border-radius: 4px; }
         
-        /* 💡 페이지 이동 버튼 스타일 */
-        .btn-nav { display: block; text-decoration: none; background: var(--gold); color: #000; padding: 12px; text-align: center; font-weight: 900; border-radius: 4px; margin-bottom: 20px; transition: 0.3s; }
-        .btn-nav:hover { background: #fff; }
+        .btn-main { background: var(--t1-red); color: #fff; padding: 18px; border: none; font-weight: 900; cursor: pointer; margin-top: 15px; width: 100%; border-radius: 4px; }
+        .btn-nav { display: block; text-decoration: none; background: var(--gold); color: #000; padding: 12px; text-align: center; font-weight: 900; border-radius: 4px; margin-bottom: 20px; }
 
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #000; border: 1px solid var(--border); margin-top: 10px; font-size: 0.9rem; }
-        .btn-group { display: flex; gap: 5px; }
-        .edit-btn { background: #333; color: #fff; border: none; padding: 6px 12px; cursor: pointer; font-weight: 800; border-radius: 2px; }
-        
-        /* 💡 삭제 버튼 스타일 */
-        .del-btn { background: #444; color: #ff4d4d; border: none; padding: 6px 12px; cursor: pointer; font-weight: 800; border-radius: 2px; transition: 0.2s; }
-        .del-btn:hover { background: var(--t1-red); color: #fff; }
+        .edit-btn { background: #333; color: #fff; border: none; padding: 6px 12px; cursor: pointer; font-weight: 800; }
+        .del-btn { background: #444; color: #ff4d4d; border: none; padding: 6px 12px; cursor: pointer; font-weight: 800; }
     </style>
 </head>
 <body>
-    <div id="admin-wrap">
-        <!-- 💡 방셀 게시판 이동 버튼 -->
-        <a href="0823.html" class="btn-nav">🏠 방셀 게시판으로 이동</a>
 
-        <div class="card">
-            <h2>BANGSEL MANAGEMENT</h2>
-            <form id="bangsel-form">
-                <div class="input-group">
-                    <input type="hidden" id="edit-id">
-                    
-                    <label>날짜 (DATE)</label>
-                    <input type="date" id="f-date" required>
-                    
-                    <label>닉네임</label>
-                    <input type="text" id="f-name">
-                    
-                    <label>SOOP ID</label>
-                    <input type="text" id="f-uid" required>
-                    
-                    <label>펀딩 개수</label>
-                    <input type="number" id="f-stars" required>
-                    
-                    <label>내용</label>
-                    <textarea id="f-content" rows="3"></textarea>
-                    
-                    <button type="submit" id="submit-btn" class="btn-main">데이터 저장 / 수정 확정</button>
-                    <button type="button" id="cancel-btn" class="btn-main" style="background:#555; display:none;" onclick="location.reload()">수정 취소</button>
-                </div>
-            </form>
-            <div id="list-container" style="margin-top:30px; border-top:1px solid #222; padding-top:20px;"></div>
-        </div>
+<!-- 로그인 화면 -->
+<div id="auth-wrap">
+    <div class="login-box">
+        <h2>ACCESS DENIED</h2>
+        <input type="email" id="email" placeholder="이메일" style="width:calc(100% - 26px); margin-bottom:10px;">
+        <input type="password" id="pw" placeholder="비밀번호" style="width:calc(100% - 26px); margin-bottom:20px;">
+        <button onclick="login()" class="btn-main" style="margin:0;">매니저 인증</button>
+    </div>
+</div>
+
+<!-- 관리 화면 -->
+<div id="admin-wrap">
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <a href="0823.html" class="btn-nav" style="margin:0; width:60%;">🏠 게시판 이동</a>
+        <button onclick="logout()" class="edit-btn" style="width:35%;">로그아웃</button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const _supabase = supabase.createClient('https://ilwpkjdwizzjmcmfmvig.supabase.co', 'sb_publishable_2IN7qgG_rvB6kcggisbmxA_XqInFAgy');
+    <div class="card">
+        <h2>BANGSEL MANAGEMENT</h2>
+        <form id="bangsel-form">
+            <div class="input-group">
+                <input type="hidden" id="edit-id">
+                <label>날짜 (DATE)</label>
+                <input type="date" id="f-date" required>
+                <label>닉네임</label>
+                <input type="text" id="f-name">
+                <label>SOOP ID</label>
+                <input type="text" id="f-uid" required>
+                <label>펀딩 개수</label>
+                <input type="number" id="f-stars" required>
+                <label>내용</label>
+                <textarea id="f-content" rows="3"></textarea>
+                <button type="submit" id="submit-btn" class="btn-main">데이터 저장 / 수정 확정</button>
+            </div>
+        </form>
+        <div id="list-container" style="margin-top:30px; border-top:1px solid #222; padding-top:20px;"></div>
+    </div>
+</div>
 
-        // 🚀 리스트 출력 (수정/삭제 버튼 포함)
-        async function fetchList() {
-            const { data } = await _supabase.from('bangsel').select('*').order('target_date', {ascending: false});
-            if(!data) return;
-            document.getElementById('list-container').innerHTML = data.map(i => `
-                <div class="list-item">
-                    <span><b>[${i.target_date}]</b> ${i.user_name}</span>
-                    <div class="btn-group">
-                        <button type="button" class="edit-btn" onclick="editMode('${i.id}')">EDIT</button>
-                        <button type="button" class="del-btn" onclick="deleteItem('${i.id}')">DEL</button>
-                    </div>
-                </div>`).join('');
-        }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // 방셀 전용 DB 연결
+    const _supabase = supabase.createClient('https://ilwpkjdwizzjmcmfmvig.supabase.co', 'sb_publishable_2IN7qgG_rvB6kcggisbmxA_XqInFAgy');
 
-        // 🚀 수정 모드 진입
-        async function editMode(id) {
-            const { data } = await _supabase.from('bangsel').select('*').eq('id', id).single();
-            if(!data) return;
+    async function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('pw').value;
+        const { error } = await _supabase.auth.signInWithPassword({ email, password });
+        if (error) alert("인증 실패: " + error.message);
+        else checkUser();
+    }
 
-            document.getElementById('edit-id').value = id;
-            document.getElementById('f-date').value = data.target_date ? data.target_date.substring(0, 10) : "";
-            document.getElementById('f-name').value = data.user_name || "";
-            document.getElementById('f-uid').value = data.user_id || "";
-            document.getElementById('f-stars').value = data.star_count || 0;
-            document.getElementById('f-content').value = data.content || "";
-
-            document.getElementById('submit-btn').innerText = "데이터 수정 완료하기";
-            document.getElementById('submit-btn').style.background = "#C29E5E";
-            document.getElementById('cancel-btn').style.display = "block";
-            window.scrollTo(0,0);
-        }
-
-        // 🚀 삭제 기능
-        async function deleteItem(id) {
-            if(!confirm("진짜 삭제하시겠습니까? (복구 불가)")) return;
-            const { error } = await _supabase.from('bangsel').delete().eq('id', id);
-            if(error) alert("삭제 실패");
-            else {
-                alert("삭제 완료");
-                location.reload();
-            }
-        }
-
-        // 🚀 저장 및 수정 실행
-        document.getElementById('bangsel-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-id').value;
-            const payload = {
-                target_date: document.getElementById('f-date').value, 
-                user_name: document.getElementById('f-name').value.trim(),
-                user_id: document.getElementById('f-uid').value.trim(),
-                star_count: parseInt(document.getElementById('f-stars').value),
-                content: document.getElementById('f-content').value.trim()
-            };
-
-            if(id) {
-                const { error } = await _supabase.from('bangsel').update(payload).eq('id', id);
-                if(error) alert("수정 실패: " + error.message);
-                else alert("수정 완료!");
-            } else {
-                const { data: exist } = await _supabase.from('bangsel').select('*')
-                    .eq('user_id', payload.user_id).eq('target_date', payload.target_date).maybeSingle();
-                
-                if(exist) {
-                    await _supabase.from('bangsel').update({ 
-                        star_count: exist.star_count + payload.star_count, 
-                        content: exist.content + " / " + payload.content,
-                        user_name: payload.user_name
-                    }).eq('id', exist.id);
-                    alert("데이터 합산 완료");
-                } else {
-                    await _supabase.from('bangsel').insert([payload]);
-                    alert("저장 완료");
-                }
-            }
-            location.reload();
-        });
-
-        // 권한 체크
-        if(localStorage.getItem("bangsel_auth") !== "ok") {
-            const pw = prompt("ACCESS KEY");
-            if(pw === "zkzk8703!") { localStorage.setItem("bangsel_auth", "ok"); location.reload(); }
-            else { location.href="index.html"; }
-        } else {
-            document.getElementById('admin-wrap').style.display = "block";
+    async function checkUser() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            document.getElementById('auth-wrap').style.display = 'none';
+            document.getElementById('admin-wrap').style.display = 'block';
             fetchList();
         }
-    </script>
+    }
+
+    async function logout() { await _supabase.auth.signOut(); location.reload(); }
+
+    async function fetchList() {
+        const { data } = await _supabase.from('bangsel').select('*').order('target_date', {ascending: false});
+        if(!data) return;
+        document.getElementById('list-container').innerHTML = data.map(i => `
+            <div class="list-item">
+                <span><b>[${i.target_date}]</b> ${i.user_name}</span>
+                <div class="btn-group">
+                    <button type="button" class="edit-btn" onclick="editMode('${i.id}')">EDIT</button>
+                    <button type="button" class="del-btn" onclick="deleteItem('${i.id}')">DEL</button>
+                </div>
+            </div>`).join('');
+    }
+
+    async function editMode(id) {
+        const { data } = await _supabase.from('bangsel').select('*').eq('id', id).single();
+        if(!data) return;
+        document.getElementById('edit-id').value = id;
+        document.getElementById('f-date').value = data.target_date;
+        document.getElementById('f-name').value = data.user_name;
+        document.getElementById('f-uid').value = data.user_id;
+        document.getElementById('f-stars').value = data.star_count;
+        document.getElementById('f-content').value = data.content;
+        document.getElementById('submit-btn').innerText = "데이터 수정 완료하기";
+        document.getElementById('submit-btn').style.background = "#C29E5E";
+        window.scrollTo(0,0);
+    }
+
+    async function deleteItem(id) {
+        if(!confirm("진짜 삭제하시겠습니까?")) return;
+        const { error } = await _supabase.from('bangsel').delete().eq('id', id);
+        if(error) alert("삭제 실패");
+        else fetchList();
+    }
+
+    document.getElementById('bangsel-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('edit-id').value;
+        const payload = {
+            target_date: document.getElementById('f-date').value, 
+            user_name: document.getElementById('f-name').value.trim(),
+            user_id: document.getElementById('f-uid').value.trim(),
+            star_count: parseInt(document.getElementById('f-stars').value),
+            content: document.getElementById('f-content').value.trim()
+        };
+
+        if(id) {
+            await _supabase.from('bangsel').update(payload).eq('id', id);
+            alert("수정 완료");
+        } else {
+            const { data: exist } = await _supabase.from('bangsel').select('*').eq('user_id', payload.user_id).eq('target_date', payload.target_date).maybeSingle();
+            if(exist) {
+                await _supabase.from('bangsel').update({ 
+                    star_count: exist.star_count + payload.star_count, 
+                    content: exist.content + " / " + payload.content,
+                    user_name: payload.user_name
+                }).eq('id', exist.id);
+                alert("데이터 합산 완료");
+            } else {
+                await _supabase.from('bangsel').insert([payload]);
+                alert("신규 저장 완료");
+            }
+        }
+        location.reload();
+    });
+
+    window.onload = checkUser;
+</script>
 </body>
 </html>
